@@ -33,7 +33,7 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 public class MainActivity extends AppCompatActivity {
 
     private  int  orientation;
-    private static final int REQUEST_CODE = 123;
+    private static final int REQUEST_CODE = 1;
     private static final String TAG = "MyApp";
 
 
