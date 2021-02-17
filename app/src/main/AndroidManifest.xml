@@ -2,15 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.gribyandrasteniyamap">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher_background"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_launcher_background"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GRibyAndRasteniyaMap">
+        android:theme="@style/Theme.GRibyAndRasteniyaMap"
+        android:configChanges="keyboardHidden|orientation|screenSize"
+        android:usesCleartextTraffic="true">
         <activity android:name=".MainActivity">
-            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
