@@ -12,13 +12,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 
 import java.io.File;
@@ -33,6 +31,11 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 public class CameraService {
     private Context context;
     private Activity activity;
+
+    @Inject
+    PlantService plantService;
+
+    private String TAG = "CameraService";
 
     public static final int PHOTO_ADDED = -1;
 
@@ -57,27 +60,24 @@ public class CameraService {
      * Метод для обработки успешного результата работы камеры
      * @return идентификатор новой записи в бд
      */
-    public Integer callback() {
+    public long callback() {
         galleryAddPic();
-        //todo: получить данные геолокации
-
-        //todo: добавить запись в бд
-        // путь к файлу в currentPhotoPath
-        return 1;
+        return plantService.insertNewPlant(currentPhotoPath);
     }
 
-    public void setImage() {
+    //todo: вынести в отдельный сервис для работы с файловым хранилищем
+    public Bitmap getImage(String filePath, Activity activity) {
         try {
-            File f = new File(currentPhotoPath);
+            File f = new File(filePath);
             Uri selectedImage = Uri.fromFile(f);
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), selectedImage);
+            return MediaStore.Images.Media.getBitmap(activity.getContentResolver(), selectedImage);
         } catch (IOException e) {
             Log.e("CameraService", "callback: file not found");
         }
+        return null;
     }
 
     private boolean isStoragePermissionGranted() {
-        String TAG = "CameraService";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {

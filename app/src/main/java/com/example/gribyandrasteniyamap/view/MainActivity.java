@@ -1,12 +1,14 @@
 package com.example.gribyandrasteniyamap.view;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     CameraService cameraService;
 
+    private final String TAG = "MainActivity";
     private int orientation;
-    private static final int REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onCameraButtonClick(View view) {
+        Log.d(TAG, "onCameraButtonClick");
         cameraService.open(getApplicationContext(), this);
-//        Intent intent = new Intent(this, PhotoDescriptionActivity.class);
-//        startActivityForResult(intent, IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode());
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CheckResult")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -58,25 +61,29 @@ public class MainActivity extends AppCompatActivity {
                 Observable.fromCallable(() -> cameraService.callback())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                id -> {
-                                    Log.d("notag", "onActivityResult: йоу");
-                                    //todo: что-то делаем с ид, например передаем в другую активность
-                                    // todo: отключить какую-нибудь крутилку
-                                },
-                                err -> {
-                                    Log.d("notag", "onActivityResult: что-то не пошло");
-                                    //todo: обработка ошибки
-                                    // todo: отключить какую-нибудь крутилку
-                                }
-                        );
+                        .subscribe(this::handleCameraSuccessResult, this::handleCameraError);
             }
         }
     }
 
+    private void handleCameraSuccessResult(long id) {
+        Log.d(TAG, "onActivityResult: в бд создан новый объект с ид " + id);
+        Intent intent = new Intent(this, PhotoDescriptionActivity.class);
+        intent.putExtra("id", id);
+        startActivityForResult(intent, IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode());
+        // todo: отключить какую-нибудь крутилку
+    }
+
+    private void handleCameraError(Throwable throwable) {
+        Log.d(TAG, "onActivityResult: ошибка");
+        //todo: обработка ошибки
+        // todo: отключить какую-нибудь крутилку
+    }
+
+    //todo: доработать метод для получение других прав, например, геолокация
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_CODE) {
+        if (requestCode == IntentRequestCode.REQUEST_IMAGE_CAPTURE.getCode()) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // permission granted
