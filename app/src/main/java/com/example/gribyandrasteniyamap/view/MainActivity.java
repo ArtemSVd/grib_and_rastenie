@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
@@ -62,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::handleCameraSuccessResult, this::handleCameraError);
+            }
+        } else if (requestCode == IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode()) {
+            if (resultCode == IntentRequestCode.REQUEST_SAVE_PLANT.getCode()) {
+                Toast.makeText(this, "Сохранено", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -37,4 +37,12 @@ public class PlantService {
     public List<Plant> getAll() {
         return appDatabase.plantDao().getAll();
     }
+
+    public int update(Plant plant) {
+        return appDatabase.plantDao().update(plant);
+    }
+
+    public int delete(Plant plant) {
+        return appDatabase.plantDao().delete(plant);
+    }
 }

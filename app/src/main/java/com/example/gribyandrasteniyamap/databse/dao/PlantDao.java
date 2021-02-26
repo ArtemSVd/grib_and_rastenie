@@ -23,9 +23,9 @@ public interface PlantDao {
     long insert(Plant plant);
 
     @Update
-    void update(Plant plant);
+    int update(Plant plant);
 
     @Delete
-    void delete(Plant plant);
+    int delete(Plant plant);
 
 }
