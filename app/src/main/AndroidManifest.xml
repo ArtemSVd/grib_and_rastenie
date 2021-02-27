@@ -17,7 +17,8 @@
         android:roundIcon="@drawable/ic_launcher_background"
         android:supportsRtl="true"
         android:theme="@style/Theme.GRibyAndRasteniyaMap">
-        <activity android:name=".view.PhotoDescriptionActivity"></activity>
+        <activity android:name=".view.GalleryActivity"></activity>
+        <activity android:name=".view.PhotoDescriptionActivity" />
         <activity android:name=".view.MainActivity">
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>

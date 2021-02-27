@@ -50,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         cameraService.open(getApplicationContext(), this);
     }
 
+    public void openGallery(View view) {
+        Intent intent = new Intent(this, GalleryActivity.class);
+        startActivityForResult(intent, IntentRequestCode.REQUEST_GALLERY.getCode());
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CheckResult")

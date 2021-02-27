@@ -3,6 +3,7 @@ package com.example.gribyandrasteniyamap.service;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
+import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 
 import java.io.File;
@@ -66,11 +68,11 @@ public class CameraService {
     }
 
     //todo: вынести в отдельный сервис для работы с файловым хранилищем
-    public Bitmap getImage(String filePath, Activity activity) {
+    public Bitmap getImage(String filePath, ContentResolver contentResolver) {
         try {
             File f = new File(filePath);
             Uri selectedImage = Uri.fromFile(f);
-            return MediaStore.Images.Media.getBitmap(activity.getContentResolver(), selectedImage);
+            return MediaStore.Images.Media.getBitmap(contentResolver, selectedImage);
         } catch (IOException e) {
             Log.e("CameraService", "callback: file not found");
         }
@@ -98,7 +100,7 @@ public class CameraService {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
+//        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
@@ -119,9 +121,9 @@ public class CameraService {
             } else {
                 Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
-        }
+//        } else {
+//            Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
+//        }
     }
 
 

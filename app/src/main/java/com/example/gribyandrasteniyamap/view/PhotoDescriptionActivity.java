@@ -25,6 +25,7 @@ import com.example.gribyandrasteniyamap.enums.KingdomType;
 import com.example.gribyandrasteniyamap.service.CameraService;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
+import com.example.gribyandrasteniyamap.view.adapter.ImageGalleryAdapter;
 
 import java.io.File;
 
