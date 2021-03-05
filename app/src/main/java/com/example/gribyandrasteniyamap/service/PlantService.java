@@ -21,11 +21,6 @@ public class PlantService {
         Plant plant = Plant.builder()
                 .filePath(filePath)
                 .type(KingdomType.NO)
-                //todo: получить данные геолокации
-                .coordinate(Coordinate.builder()
-                        .latitude("46.5235")
-                        .longitude("54.1231")
-                        .build())
                 .build();
         return appDatabase.plantDao().insert(plant);
     }

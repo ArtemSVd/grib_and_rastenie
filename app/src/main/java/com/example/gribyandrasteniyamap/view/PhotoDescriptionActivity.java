@@ -3,6 +3,7 @@ package com.example.gribyandrasteniyamap.view;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.gribyandrasteniyamap.R;
+import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
@@ -29,6 +31,7 @@ import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -76,11 +79,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         };
         EditText nameView = findViewById(R.id.name);
         nameView.setFilters(new InputFilter[]{filter});
-        TextView tvLong = findViewById(R.id.longitude);
-        TextView tvLat = findViewById(R.id.latitude);
-        locationService.getCurrentLocation(getApplicationContext(), this, tvLong, tvLat);
-
-
+        locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
 
         Intent intent = getIntent();
         long id = intent.getLongExtra("id", -1L);
@@ -136,13 +135,10 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             plant.getCoordinate().setLatitude(latitudeView.getText().toString());
             plant.getCoordinate().setLongitude(longitudeView.getText().toString());
 
-            Observable.fromCallable(() -> plantService.update(plant))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(r -> {
-                        setResult(IntentRequestCode.REQUEST_SAVE_PLANT.getCode());
-                        finish();
-                    });
+            updatePlant(plant, (r) -> {
+                setResult(IntentRequestCode.REQUEST_SAVE_PLANT.getCode());
+                finish();
+            });
         }
 
     }
@@ -168,17 +164,41 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         findViewById(R.id.progress_bar).setVisibility(visibility);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == IntentRequestCode.REQUEST_GET_GPS.getCode()) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "GPS permission granted");
-                TextView tvLong = findViewById(R.id.longitude);
-                TextView tvLat = findViewById(R.id.latitude);
-                locationService.getCurrentLocation(getApplicationContext(), this, tvLong, tvLat);
+
+                locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
             }
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void geolocationCallback(Location location) {
+        TextView tvLong = findViewById(R.id.longitude);
+        tvLong.setText(String.valueOf(location.getLongitude()));
+        TextView tvLat = findViewById(R.id.latitude);
+        tvLat.setText(String.valueOf(location.getLatitude()));
+
+        plant.setCoordinate(Coordinate.builder()
+                .latitude(String.valueOf(location.getLatitude()))
+                .longitude(String.valueOf(location.getLongitude()))
+                .build()
+        );
+        updatePlant(plant, (r) -> {});
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updatePlant(Plant plant, Consumer<Integer> successCallback) {
+        Observable.fromCallable(() -> plantService.update(plant))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(r -> successCallback.accept(r));
     }
 
 
