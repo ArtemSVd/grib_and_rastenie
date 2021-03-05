@@ -2,6 +2,7 @@ package com.example.gribyandrasteniyamap.view;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -23,6 +24,7 @@ import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
 import com.example.gribyandrasteniyamap.service.CameraService;
+import com.example.gribyandrasteniyamap.service.LocationService;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 
@@ -42,6 +44,11 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
     @Inject
     CameraService cameraService;
+
+    @Inject
+    LocationService locationService;
+
+    private final String TAG = "PhotoDescriptionAct";
 
     private Plant plant;
 
@@ -69,11 +76,16 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         };
         EditText nameView = findViewById(R.id.name);
         nameView.setFilters(new InputFilter[]{filter});
+        TextView tvLong = findViewById(R.id.longitude);
+        TextView tvLat = findViewById(R.id.latitude);
+        locationService.getCurrentLocation(getApplicationContext(), this, tvLong, tvLat);
+
 
 
         Intent intent = getIntent();
         long id = intent.getLongExtra("id", -1L);
         getPlant(id);
+
     }
 
 
@@ -155,4 +167,19 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
         findViewById(R.id.progress_bar).setVisibility(visibility);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == IntentRequestCode.REQUEST_GET_GPS.getCode()) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "GPS permission granted");
+                TextView tvLong = findViewById(R.id.longitude);
+                TextView tvLat = findViewById(R.id.latitude);
+                locationService.getCurrentLocation(getApplicationContext(), this, tvLong, tvLat);
+            }
+        }
+    }
+
+
 }
