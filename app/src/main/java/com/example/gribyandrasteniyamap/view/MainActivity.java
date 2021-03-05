@@ -1,11 +1,8 @@
 package com.example.gribyandrasteniyamap.view;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -14,6 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
@@ -102,8 +103,13 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        orientation = newConfig.orientation;
-        setBackgroundImage(newConfig.orientation);
+        //установка нового изображения при повороте
+        //   orientation = newConfig.orientation;
+        //   setBackgroundImage(newConfig.orientation);
+
+        //запрет на поворот экрана
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void setBackgroundImage(final int orientation) {

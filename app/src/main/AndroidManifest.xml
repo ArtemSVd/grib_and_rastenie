@@ -17,8 +17,13 @@
         android:roundIcon="@drawable/ic_launcher_background"
         android:supportsRtl="true"
         android:theme="@style/Theme.GRibyAndRasteniyaMap">
-        <activity android:name=".view.PhotoDescriptionActivity"></activity>
+        <activity android:name=".view.PhotoDescriptionActivity">
+            android:configChanges="orientation">
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".view.MainActivity">
+            android:configChanges="orientation">
+            android:screenOrientation="portrait">
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
