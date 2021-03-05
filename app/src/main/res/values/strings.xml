@@ -2,4 +2,9 @@
     <string name="app_name">GRibyAndRasteniyaMap</string>
     <string name="gallery">Gallery</string>
     <string name="gallery_is_empty">Gallery is empty</string>
+    <string name="items_removed_message">%d items removed</string>
+    <string name="selected_panel_text">Selected: %d</string>
+    <string name="kingdomType_no">Not selected</string>
+    <string name="kingdomType_mushrooms">Mushrooms</string>
+    <string name="kingdomType_plants">Plants</string>
 </resources>

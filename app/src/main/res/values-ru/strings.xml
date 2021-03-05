@@ -3,4 +3,9 @@
     <string name="app_name">GRibyAndRasteniyaMap</string>
     <string name="gallery">Галерея</string>
     <string name="gallery_is_empty">Галерея пуста</string>
+    <string name="items_removed_message">Удалено %d элементов</string>
+    <string name="selected_panel_text">Выбрано: %d</string>
+    <string name="kingdomType_no">Не выбрано</string>
+    <string name="kingdomType_mushrooms">Грибы</string>
+    <string name="kingdomType_plants">Растения</string>
 </resources>

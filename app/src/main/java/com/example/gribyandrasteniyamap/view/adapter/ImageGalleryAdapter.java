@@ -158,8 +158,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
                 changeTopPanelVisible();
 
                 TextView textView = ((Activity) mContext).findViewById(R.id.selectedCount);
-                String s = "Выбрано: " + getSelectedCount();
-                textView.setText(s);
+                textView.setText(String.format(mContext.getString(R.string.selected_panel_text), getSelectedCount()));
             }
         }
 
@@ -197,7 +196,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
                                 notifyItemRangeChanged(s, selectedPositions.size());
                                 changeTopPanelVisible();
                             });
-                    Toast.makeText(mContext, "Удалено: " + getSelectedCount() + " элементов", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, String.format(mContext.getString(R.string.items_removed_message), getSelectedCount()), Toast.LENGTH_SHORT).show();
                 });
             });
         }

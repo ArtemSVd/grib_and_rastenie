@@ -62,7 +62,8 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         changeElementsVisibility();
 
         Spinner spinner = findViewById(R.id.kingdomType);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, KingdomType.nameValues());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, KingdomType.nameValues(this));
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -122,7 +123,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
                 return;
             }
 
-            plant.setType(KingdomType.findByName((String) spinner.getSelectedItem()));
+            plant.setType(KingdomType.findByName((String) spinner.getSelectedItem(), this));
             plant.setName(nameView.getText().toString());
             plant.setDescription(descriptionView.getText().toString());
 
