@@ -1,28 +1,29 @@
 package com.example.gribyandrasteniyamap.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 import com.example.gribyandrasteniyamap.view.adapter.ImageGalleryAdapter;
+import com.example.gribyandrasteniyamap.view.model.PlantViewModel;
 
+import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
 
 public class GalleryActivity extends AppCompatActivity {
@@ -33,38 +34,48 @@ public class GalleryActivity extends AppCompatActivity {
     @Inject
     ImageGalleryAdapter adapter;
 
+    private PlantViewModel plantViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Util.setFullScreen(this);
         Toothpick.inject(this, Toothpick.openScope("APP"));
         setContentView(R.layout.activity_gallery);
-
+        plantViewModel = ViewModelProviders.of(this).get(PlantViewModel.class);
         getPlants();
     }
 
     @SuppressLint("CheckResult")
     private void getPlants() {
-        Observable.fromCallable(() -> plantService.getAll())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleSuccessResult, this::handleError);
+        plantViewModel.getAll().observe(this, plants -> {
+            List<Plant> deletedPlants = plants.stream()
+                    .filter(p -> !(new File(p.getFilePath()).exists()))
+                    .peek(p -> plantViewModel.delete(p))
+                    .collect(Collectors.toList());
+
+            plants.removeAll(deletedPlants);
+
+            changeElementsVisible(plants.isEmpty());
+
+            if (!plants.isEmpty()) {
+                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 3);
+                RecyclerView recyclerView = findViewById(R.id.rv_images);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(layoutManager);
+
+                adapter.setmContext(this);
+                adapter.setPlants(plants);
+                recyclerView.setAdapter(adapter);
+            }
+        });
     }
 
-    private void handleSuccessResult(List<Plant> plants) {
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 3);
-        RecyclerView recyclerView = findViewById(R.id.rv_images);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
+    private void changeElementsVisible(boolean isEmpty) {
+        LinearLayout galleryEmpty = findViewById(R.id.galleryEmpty);
+        LinearLayout galleryNotEmpty = findViewById(R.id.galleryNotEmpty);
 
-        adapter.setmContext(this);
-        adapter.setPlants(plants);
-        recyclerView.setAdapter(adapter);
-
-    }
-
-    private void handleError(Throwable throwable) {
-        Log.d("notag", "onActivityResult: что-то не пошло");
-        //todo: вернуться на главную активность, показать ошибку пользователю
+        galleryEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        galleryNotEmpty.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
     }
 }

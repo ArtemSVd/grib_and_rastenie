@@ -1,5 +1,6 @@
 package com.example.gribyandrasteniyamap.databse.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -14,7 +15,7 @@ import java.util.List;
 public interface PlantDao {
 
     @Query("SELECT * from Plant")
-    List<Plant> getAll();
+    LiveData<List<Plant>> getAll();
 
     @Query("SELECT * from Plant where id = :id")
     Plant getById(long id);

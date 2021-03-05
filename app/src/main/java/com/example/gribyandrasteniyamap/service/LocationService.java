@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Build;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
@@ -75,8 +74,6 @@ public class LocationService {
         });
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void getCurrentLocation(Context cntxt, Activity actvt, Consumer<Location> function) {
         context = cntxt;
         activity = actvt;

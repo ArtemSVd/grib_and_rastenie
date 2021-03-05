@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GRibyAndRasteniyaMap</string>
+    <string name="gallery">Gallery</string>
+    <string name="gallery_is_empty">Gallery is empty</string>
 </resources>

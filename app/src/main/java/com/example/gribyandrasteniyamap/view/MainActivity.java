@@ -6,16 +6,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gribyandrasteniyamap.R;
@@ -63,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, IntentRequestCode.REQUEST_GALLERY.getCode());
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CheckResult")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -76,11 +71,6 @@ public class MainActivity extends AppCompatActivity {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::handleCameraSuccessResult, this::handleCameraError);
-                /*TextView tvLong = findViewById(R.id.tvLong);
-                TextView tvLat = findViewById(R.id.tvLat);
-                Double[] coordinate = locationService.getCurrentLocation();
-                tvLat.setText(coordinate[0].toString());
-                tvLong.setText(coordinate[1].toString());*/
             }
         } else if (requestCode == IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode()) {
             if (resultCode == IntentRequestCode.REQUEST_SAVE_PLANT.getCode()) {
@@ -90,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
             if (resultCode == Activity.RESULT_OK) {
                 Toast.makeText(this, "GPS is turned on", Toast.LENGTH_SHORT).show();
-                //locationService.getCurrentLocation();
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "GPS is required to be turned on", Toast.LENGTH_SHORT).show();
             }
@@ -111,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         // todo: отключить какую-нибудь крутилку
     }
 
-    //todo: доработать метод для получение других прав, например, геолокация
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         int t = 0;
@@ -134,10 +122,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-        //установка нового изображения при повороте
-        //   orientation = newConfig.orientation;
-        //   setBackgroundImage(newConfig.orientation);
 
         //запрет на поворот экрана
         super.onConfigurationChanged(newConfig);

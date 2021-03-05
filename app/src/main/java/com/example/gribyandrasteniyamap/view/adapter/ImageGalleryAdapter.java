@@ -1,10 +1,10 @@
 package com.example.gribyandrasteniyamap.view.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,21 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.gribyandrasteniyamap.R;
-import com.example.gribyandrasteniyamap.databse.AppDatabase;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.service.PlantService;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -50,7 +46,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
 
     private Context mContext;
     private List<Plant> plants;
-    private List<Integer> selectedPositions = new ArrayList<>();
+    private final List<Integer> selectedPositions = new ArrayList<>();
 
     public void setmContext(Context mContext) {
         this.mContext = mContext;
@@ -58,9 +54,9 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
 
     public void setPlants(List<Plant> plants) {
         this.plants = plants;
+        notifyDataSetChanged();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @NonNull
     @Override
     public ImageGalleryAdapter.MViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -75,20 +71,15 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
         Plant plant = plants.get(position);
         ImageView imageView = holder.mPhotoImageView;
 
+        holder.mNameTextView.setText(plant.getName());
+
         holder.checkBox.setChecked(selectedPositions.contains(position));
         holder.checkBox.setVisibility(selectedPositions.contains(position) ? View.VISIBLE : View.GONE);
-
-        File file = new File(plant.getFilePath());
-        if (!file.exists()) {
-            plants.remove(plant);
-           // notifyItemRemoved(position);
-           // notifyItemRangeChanged(position, plants.size());
-            return;
-        }
 
         Glide.with(mContext)
                 .load(plant.filePath)
                 .into(imageView);
+
         logMemory();
     }
 
@@ -113,12 +104,14 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
     public class MViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         public ImageView mPhotoImageView;
+        public TextView mNameTextView;
         public CheckBox checkBox;
 
-        @RequiresApi(api = Build.VERSION_CODES.N)
+        @SuppressLint("CheckResult")
         public MViewHolder(View itemView) {
             super(itemView);
             mPhotoImageView = itemView.findViewById(R.id.iv_photo);
+            mNameTextView = itemView.findViewById(R.id.tv_name);
             checkBox = itemView.findViewById(R.id.checkBox);
 
             int[][] states = {{android.R.attr.state_checked}, {}};
@@ -128,36 +121,8 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            ImageButton cancelBtn = ((Activity) mContext).findViewById(R.id.cancelButton);
-            cancelBtn.setOnClickListener(v -> {
-                selectedPositions.clear();
-                changeTopPanelVisible();
-                notifyDataSetChanged();
-            });
-
-            ImageButton deleteBtn = ((Activity) mContext).findViewById(R.id.deleteButton);
-            deleteBtn.setOnClickListener(v -> {
-                List<Integer> copyList = new ArrayList<>(selectedPositions);
-                copyList.forEach(s -> {
-                    Plant plant = plants.get(s);
-
-                    File file = new File(plant.getFilePath());
-                    if (file.exists()) {
-                        file.delete();
-                        Observable.fromCallable(() -> plantService.delete(plant))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(r -> {
-                                    selectedPositions.remove((Integer) s);
-                                    plants.remove(plant);
-                                    notifyItemRemoved(s);
-                                    notifyItemRangeChanged(s, selectedPositions.size());
-                                    changeTopPanelVisible();
-                                });
-                    }
-                });
-                Toast.makeText(mContext, "Удалено: " + getSelectedCount() + " элементов", Toast.LENGTH_SHORT).show();
-            });
+            setOnCancelListener();
+            setOnDeleteListener();
         }
 
 
@@ -177,6 +142,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
             processClick(getAdapterPosition());
             return true;
         }
+
         private void processClick(int position) {
             if (position != RecyclerView.NO_POSITION) {
                 if (selectedPositions.contains(position)) {
@@ -204,6 +170,38 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
             deletePanel.setVisibility(isSelectionMode() ? View.VISIBLE : View.GONE);
             galleryPanel.setVisibility(isSelectionMode() ? View.GONE : View.VISIBLE);
         }
+
+        private void setOnCancelListener() {
+            ImageButton cancelBtn = ((Activity) mContext).findViewById(R.id.cancelButton);
+            cancelBtn.setOnClickListener(v -> {
+                selectedPositions.clear();
+                changeTopPanelVisible();
+                notifyDataSetChanged();
+            });
+        }
+
+        private void setOnDeleteListener() {
+            ImageButton deleteBtn = ((Activity) mContext).findViewById(R.id.deleteButton);
+            deleteBtn.setOnClickListener(v -> {
+                List<Integer> copyList = new ArrayList<>(selectedPositions);
+                copyList.forEach(s -> {
+                    Plant plant = plants.get(s);
+                    new File(plant.getFilePath()).delete();
+                    Observable.fromCallable(() -> plantService.delete(plant))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(r -> {
+                                selectedPositions.remove((Integer) s);
+                                plants.remove(plant);
+                                notifyItemRemoved(s);
+                                notifyItemRangeChanged(s, selectedPositions.size());
+                                changeTopPanelVisible();
+                            });
+                    Toast.makeText(mContext, "Удалено: " + getSelectedCount() + " элементов", Toast.LENGTH_SHORT).show();
+                });
+            });
+        }
+
 
     }
 }

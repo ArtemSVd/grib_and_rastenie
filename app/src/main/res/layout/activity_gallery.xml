@@ -18,17 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="94"
-            android:gravity="right"
-            android:visibility="visible">
+            android:gravity="end"
+            android:visibility="visible"
+            android:background="#dbdbdb">
 
             <TextView
                 android:id="@+id/galleryView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:textAlignment="center"
-                android:text="Галерея"/>
+                android:text="@string/gallery"/>
 
         </LinearLayout>
 
@@ -37,8 +38,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="94"
-            android:gravity="right"
-            android:visibility="gone">
+            android:gravity="end"
+            android:visibility="gone"
+            android:background="#dbdbdb">
 
             <ImageButton
                 android:id="@+id/cancelButton"
@@ -52,7 +54,7 @@
 
             <TextView
                 android:id="@+id/selectedCount"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
@@ -70,6 +72,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/galleryNotEmpty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="6">
@@ -78,6 +81,30 @@
                 android:id="@+id/rv_images"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/galleryEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:visibility="gone"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:gravity="center_vertical|center_horizontal"
+                app:srcCompat="@drawable/mushroom" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:gravity="center"
+                android:text="@string/gallery_is_empty"
+                android:textAlignment="center"/>
         </LinearLayout>
 
     </LinearLayout>

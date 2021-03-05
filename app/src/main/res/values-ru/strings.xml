@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GRibyAndRasteniyaMap</string>
+    <string name="gallery">Галерея</string>
+    <string name="gallery_is_empty">Галерея пуста</string>
+</resources>

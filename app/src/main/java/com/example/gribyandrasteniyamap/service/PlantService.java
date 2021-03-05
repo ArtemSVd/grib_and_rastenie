@@ -1,17 +1,8 @@
 package com.example.gribyandrasteniyamap.service;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.example.gribyandrasteniyamap.databse.AppDatabase;
-import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,23 +24,6 @@ public class PlantService {
 
     public Plant getById(long id) {
         return appDatabase.plantDao().getById(id);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public List<Plant> getAll() {
-        List<Plant> plants = appDatabase.plantDao().getAll();
-
-        // todo: подумать как сделать проще
-        List<Plant> copy = new ArrayList<>(plants);
-        copy.forEach(p -> {
-            File file = new File(p.getFilePath());
-            if (!file.exists()) {
-                plants.remove(p);
-                delete(p);
-            }
-        });
-
-        return plants;
     }
 
     public int update(Plant plant) {
