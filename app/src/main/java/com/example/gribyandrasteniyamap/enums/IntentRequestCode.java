@@ -7,7 +7,9 @@ public enum  IntentRequestCode {
     REQUEST_SAVE_PLANT(3),
     REQUEST_CHECK_GPS(4),
     REQUEST_GET_GPS(5),
-    REQUEST_GALLERY(6);
+    REQUEST_GALLERY(6),
+    REQUEST_MAP(7),
+    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION(8);
 
     int code;
 

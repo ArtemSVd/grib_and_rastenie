@@ -73,8 +73,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:alpha="0.80"
-                    app:backgroundTint="#199589"
-                    android:text="Map" />
+                    android:onClick="openMap"
+                    android:text="Map"
+                    app:backgroundTint="#199589" />
             </LinearLayout>
 
 

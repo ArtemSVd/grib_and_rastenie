@@ -7,4 +7,5 @@
     <string name="kingdomType_no">Not selected</string>
     <string name="kingdomType_mushrooms">Mushrooms</string>
     <string name="kingdomType_plants">Plants</string>
+    <string name="title_activity_map">Map</string>
 </resources>

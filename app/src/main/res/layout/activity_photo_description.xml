@@ -131,6 +131,15 @@
             android:onClick="onCancel"
             android:text="Отмена" />
     </RelativeLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="39dp"
+        android:layout_height="45dp"
+        android:onClick="onBtnClick"
+        android:text="O"
+        tools:layout_editor_absoluteX="367dp"
+        tools:layout_editor_absoluteY="8dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 

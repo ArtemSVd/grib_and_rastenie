@@ -21,10 +21,10 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.Task;
-
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
+
 
 public class LocationService {
     private Context context;
@@ -94,4 +94,5 @@ public class LocationService {
             }
         }
     }
+
 }

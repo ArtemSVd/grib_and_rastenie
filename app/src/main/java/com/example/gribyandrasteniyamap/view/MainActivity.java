@@ -60,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, IntentRequestCode.REQUEST_GALLERY.getCode());
     }
 
+    public void openMap(View view) {
+        Intent intent = new Intent(this, map.class);
+        startActivityForResult(intent, IntentRequestCode.REQUEST_MAP.getCode());
+    }
+
     @SuppressLint("CheckResult")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
