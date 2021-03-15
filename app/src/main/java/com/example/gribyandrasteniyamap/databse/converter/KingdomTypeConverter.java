@@ -7,12 +7,12 @@ import com.example.gribyandrasteniyamap.enums.KingdomType;
 public class KingdomTypeConverter {
 
     @TypeConverter
-    public static int fromTypeToInt(KingdomType value) {
-        return value.ordinal();
+    public static String fromTypeToString(KingdomType value) {
+        return value.name();
     }
 
     @TypeConverter
-    public static KingdomType fromIntToType(int value) {
-        return (KingdomType.values()[value]);
+    public static KingdomType fromStringToType(String value) {
+        return (KingdomType.valueOf(KingdomType.class, value));
     }
 }

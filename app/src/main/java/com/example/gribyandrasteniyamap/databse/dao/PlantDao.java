@@ -20,6 +20,9 @@ public interface PlantDao {
     @Query("SELECT * from Plant where id = :id")
     Plant getById(long id);
 
+    @Query("SELECT * from Plant where upper(name) like upper('%' || :name || '%') and type in (:kingdomTypes)")
+    List<Plant> getPlants(String name, List<String> kingdomTypes);
+
     @Insert
     long insert(Plant plant);
 

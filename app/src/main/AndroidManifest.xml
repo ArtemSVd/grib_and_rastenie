@@ -15,6 +15,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
@@ -38,7 +39,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".view.map"
+            android:name=".view.MapActivity"
             android:label="@string/title_activity_map"></activity>
         <activity
             android:name=".view.PhotoDescriptionActivity"

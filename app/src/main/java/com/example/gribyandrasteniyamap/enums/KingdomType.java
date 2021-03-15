@@ -5,13 +5,16 @@ import android.content.Context;
 import com.example.gribyandrasteniyamap.R;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum KingdomType {
     NO(0, R.string.kingdomType_no),
     MUSHROOMS(1, R.string.kingdomType_mushrooms),
@@ -21,7 +24,12 @@ public enum KingdomType {
     private final int stringId;
 
     public static List<String> nameValues(Context context) {
+        return nameValues(context, Collections.emptyList());
+    }
+
+    public static List<String> nameValues(Context context, List<Integer> excludeIds) {
         return Arrays.stream(KingdomType.values())
+                .filter(v -> !excludeIds.contains(v.id))
                 .map(v -> context.getString(v.stringId))
                 .collect(Collectors.toList());
     }
@@ -37,6 +45,12 @@ public enum KingdomType {
                 .orElse(KingdomType.NO);
     }
 
+    public static KingdomType findById(int id) {
+        return Arrays.stream(KingdomType.values())
+                .filter(type -> type.getId() == id)
+                .findFirst()
+                .orElse(KingdomType.NO);
+    }
 
 
 }

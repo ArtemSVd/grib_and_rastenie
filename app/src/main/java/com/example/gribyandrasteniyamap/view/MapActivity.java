@@ -8,21 +8,49 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.example.gribyandrasteniyamap.R;
+import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
+import com.example.gribyandrasteniyamap.dto.PlantDto;
+import com.example.gribyandrasteniyamap.dto.PlantsRequestParams;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
+import com.example.gribyandrasteniyamap.enums.KingdomType;
+import com.example.gribyandrasteniyamap.service.PlantService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class map extends FragmentActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
+import toothpick.Toothpick;
+
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    @Inject
+    PlantService plantService;
+
+    private final List<CheckBox> checkBoxes = new ArrayList<>();
+    private ProgressBar progressBar;
+    private static int COUNT = 0;
 
     private GoogleMap mMap;
     public boolean locationPermissionGranted;
@@ -35,12 +63,95 @@ public class map extends FragmentActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        Toothpick.inject(this, Toothpick.openScope("APP"));
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        progressBar = findViewById(R.id.progressBar);
+
+        LinearLayout linearLayout = findViewById(R.id.checkBoxGroup);
+        Arrays.stream(KingdomType.values())
+                .filter(t -> !t.equals(KingdomType.NO))
+                .forEach(type -> {
+                    CheckBox checkBox = new CheckBox(this);
+                    checkBox.setText(getString(type.getStringId()));
+                    checkBox.setId(type.getId());
+                    linearLayout.addView(checkBox);
+                    checkBoxes.add(checkBox);
+                });
+    }
+
+    public void openSearch(View view) {
+        findViewById(R.id.search).setVisibility(View.GONE);
+        findViewById(R.id.searchView).setVisibility(View.VISIBLE);
+    }
+
+    public void cancelSearch(View view) {
+        findViewById(R.id.search).setVisibility(View.VISIBLE);
+        findViewById(R.id.searchView).setVisibility(View.GONE);
+    }
+
+    public void onFindClick(View view) {
+        find();
+    }
+
+    private void find() {
+        progressBar.setVisibility(View.VISIBLE);
+
+        cancelSearch(null);
+        mMap.clear();
+
+        List<KingdomType> checkedTypes = checkBoxes.stream()
+                .filter(CompoundButton::isChecked)
+                .map(View::getId)
+                .map(KingdomType::findById)
+                .collect(Collectors.toList());
+
+        String name = ((EditText) findViewById(R.id.maps_find_name)).getText().toString().trim();
+
+        PlantsRequestParams params = PlantsRequestParams.builder()
+                .name(name)
+                .kingdomTypes(checkedTypes.isEmpty() ? Arrays.asList(KingdomType.values()) : checkedTypes).build();
+
+        plantService.getPlants(params, this::renderMarkers);
+    }
+
+    private void renderMarkers(List<PlantDto> plants) {
+        // todo: возможно с большим количеством меток будет долго работать, лучше делать в отдельном потоке ?
+        // todo: возможно стоит использовать кластеризацию маркеров
+        for (PlantDto plant : plants) {
+            Coordinate coordinate = plant.getCoordinate();
+            if (coordinate != null) {
+                LatLng latLng = new LatLng(Double.parseDouble(coordinate.latitude), Double.parseDouble(coordinate.longitude));
+
+                mMap.addMarker(new MarkerOptions().position(latLng)
+                        .title(plant.getName())
+                        .icon(BitmapDescriptorFactory.defaultMarker(getColor(plant.getType()))));
+            }
+        }
+
+        // Костыль, не придумал как сделать по-другому
+        COUNT++;
+        if (COUNT == 2) {
+            progressBar.setVisibility(View.GONE);
+            COUNT = 0;
+        }
+    }
+
+    private float getColor(KingdomType kingdomType) {
+        switch (kingdomType) {
+            case MUSHROOMS:
+                return BitmapDescriptorFactory.HUE_ORANGE;
+            case PLANT:
+                return BitmapDescriptorFactory.HUE_GREEN;
+            default:
+                return BitmapDescriptorFactory.HUE_RED;
+        }
     }
 
     /**
@@ -66,6 +177,8 @@ public class map extends FragmentActivity implements OnMapReadyCallback {
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
+        find();
     }
 
     private void updateLocationUI() {
