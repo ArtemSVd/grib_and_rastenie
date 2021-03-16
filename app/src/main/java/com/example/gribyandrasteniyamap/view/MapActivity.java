@@ -129,9 +129,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             if (coordinate != null) {
                 LatLng latLng = new LatLng(Double.parseDouble(coordinate.latitude), Double.parseDouble(coordinate.longitude));
 
+                /*mMap.addMarker(new MarkerOptions().position(latLng)
+                        .title(plant.getName())
+                        .icon(BitmapDescriptorFactory.defaultMarker(getColor(plant.getType()))));*/
+
                 mMap.addMarker(new MarkerOptions().position(latLng)
                         .title(plant.getName())
-                        .icon(BitmapDescriptorFactory.defaultMarker(getColor(plant.getType()))));
+                        .icon(BitmapDescriptorFactory.fromResource(getIcon(plant.getType()))));
             }
         }
 
@@ -151,6 +155,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 return BitmapDescriptorFactory.HUE_GREEN;
             default:
                 return BitmapDescriptorFactory.HUE_RED;
+        }
+    }
+
+    private int getIcon(KingdomType kingdomType) {
+        switch (kingdomType) {
+            case MUSHROOMS:
+                return R.drawable.mushroom_icon;
+            case PLANT:
+                return R.drawable.plant_icon;
+            default:
+                return R.drawable.default_icon;
         }
     }
 
@@ -178,7 +193,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
 
-        find();
+        //find();
     }
 
     private void updateLocationUI() {

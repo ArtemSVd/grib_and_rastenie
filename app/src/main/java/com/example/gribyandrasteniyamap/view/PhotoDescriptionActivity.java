@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +30,8 @@ import com.example.gribyandrasteniyamap.service.CameraService;
 import com.example.gribyandrasteniyamap.service.LocationService;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -63,6 +66,11 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         Util.setFullScreen(this);
         setContentView(R.layout.activity_photo_description);
         changeElementsVisibility();
+        locationService.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationService.locationRequest = LocationRequest.create();
+        locationService.locationRequest.setInterval(4000);
+        locationService.locationRequest.setFastestInterval(2000);
+        locationService.locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         Spinner spinner = findViewById(R.id.kingdomType);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, KingdomType.nameValues(getApplicationContext()));
@@ -79,7 +87,9 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         };
         EditText nameView = findViewById(R.id.name);
         nameView.setFilters(new InputFilter[]{filter});
-        locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
+        //locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
+        locationService.getLocationPermission(getApplicationContext(), this);
+        locationService.checkSettingsAndStartLocationUpdates(this);
 
         Intent intent = getIntent();
         long id = intent.getLongExtra("id", -1L);
@@ -132,6 +142,13 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             plant.setType(KingdomType.findByName((String) spinner.getSelectedItem(), getApplicationContext()));
             plant.setName(nameView.getText().toString());
             plant.setDescription(descriptionView.getText().toString());
+
+            plant.setCoordinate(Coordinate.builder()
+                    .latitude(String.valueOf(locationService.curPos.getLatitude()))
+                    .longitude(String.valueOf(locationService.curPos.getLongitude()))
+                    .build()
+            );
+
             plant.getCoordinate().setLatitude(latitudeView.getText().toString());
             plant.getCoordinate().setLongitude(longitudeView.getText().toString());
 
@@ -164,7 +181,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         findViewById(R.id.progress_bar).setVisibility(visibility);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    /*@RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == IntentRequestCode.REQUEST_GET_GPS.getCode()) {
@@ -175,6 +192,22 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
                 locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
             }
         }
+    }*/
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        locationService.locationPermissionGranted = false;
+        if (requestCode == IntentRequestCode.REQUEST_GET_GPS.getCode()) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationService.locationPermissionGranted = true;
+                locationService.checkSettingsAndStartLocationUpdates(this);
+            }
+        }
+        //updateLocationUI();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
