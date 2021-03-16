@@ -32,4 +32,6 @@ public class PlantDto {
     private KingdomType type;
 
     private Coordinate coordinate;
+
+    private boolean isLocal;
 }

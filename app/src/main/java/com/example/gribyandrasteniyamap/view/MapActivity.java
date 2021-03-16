@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
@@ -24,6 +25,7 @@ import com.example.gribyandrasteniyamap.dto.PlantsRequestParams;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
 import com.example.gribyandrasteniyamap.service.PlantService;
+import com.example.gribyandrasteniyamap.view.model.MarkerTag;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -132,16 +134,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             if (coordinate != null) {
                 LatLng latLng = new LatLng(Double.parseDouble(coordinate.latitude), Double.parseDouble(coordinate.longitude));
 
-                /*mMap.addMarker(new MarkerOptions().position(latLng)
-                        .title(plant.getName())
-                        .icon(BitmapDescriptorFactory.defaultMarker(getColor(plant.getType()))));*/
                 String snippetText = plant.getType().toString() + "\n" + plant.getDescription() + "\n"
                                      + "Long: " + plant.getCoordinate().getLongitude() + "\n"
                                      + "Lat: " + plant.getCoordinate().getLatitude();
                 mMap.addMarker(new MarkerOptions().position(latLng)
                         .title(plant.getName())
                         .snippet(snippetText)
-                        .icon(BitmapDescriptorFactory.fromResource(getIcon(plant.getType()))));
+                        .icon(BitmapDescriptorFactory.fromResource(getIcon(plant.getType()))))
+                        .setTag(MarkerTag.builder().plantId(plant.getId()).isLocal(plant.isLocal()).build());
             }
         }
 
@@ -150,17 +150,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         if (COUNT == 2) {
             progressBar.setVisibility(View.GONE);
             COUNT = 0;
-        }
-    }
-
-    private float getColor(KingdomType kingdomType) {
-        switch (kingdomType) {
-            case MUSHROOMS:
-                return BitmapDescriptorFactory.HUE_ORANGE;
-            case PLANT:
-                return BitmapDescriptorFactory.HUE_GREEN;
-            default:
-                return BitmapDescriptorFactory.HUE_RED;
         }
     }
 
@@ -188,18 +177,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-
-        /*
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-        // Turn on the My Location layer and the related control on the map.
         updateLocationUI();
-        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
-        // Get the current location of the device and set the position of the map.
-        getDeviceLocation();
+        CustomInfoWindowAdapter customInfoWindowAdapter = new CustomInfoWindowAdapter(this);
+        mMap.setInfoWindowAdapter(customInfoWindowAdapter);
 
-        //find();
+        getDeviceLocation();
+        mMap.setOnInfoWindowClickListener(customInfoWindowAdapter);
+
+        find();
     }
 
     private void updateLocationUI() {
@@ -222,11 +207,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -289,13 +269,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         }
     }
 
-    class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+    class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener {
         private final View mWindow;
         private final View mContents;
+        private final Context context;
 
-        CustomInfoWindowAdapter() {
+        CustomInfoWindowAdapter(Context context) {
+            this.context = context;
             mWindow = getLayoutInflater().inflate(R.layout.map_item_info, null);
             mContents = getLayoutInflater().inflate(R.layout.map_item_info, null);
+
         }
 
         private void render(Marker marker, View view) {
@@ -317,5 +300,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             render(marker, mWindow);
             return mWindow;
         }
+
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            MarkerTag markerTag = (MarkerTag) marker.getTag();
+            Toast.makeText(context, markerTag.toString(), Toast.LENGTH_LONG).show();
+        }
+
     }
 }

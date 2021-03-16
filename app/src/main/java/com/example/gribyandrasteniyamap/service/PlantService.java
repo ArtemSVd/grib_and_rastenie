@@ -93,6 +93,7 @@ public class PlantService {
                 .name(plant.getName())
                 .type(plant.getType())
                 .id(plant.getId())
+                .isLocal(true)
                 .build();
     }
 
