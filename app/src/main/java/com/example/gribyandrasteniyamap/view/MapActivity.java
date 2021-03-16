@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -132,9 +135,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 /*mMap.addMarker(new MarkerOptions().position(latLng)
                         .title(plant.getName())
                         .icon(BitmapDescriptorFactory.defaultMarker(getColor(plant.getType()))));*/
-
+                String snippetText = plant.getType().toString() + "\n" + plant.getDescription() + "\n"
+                                     + "Long: " + plant.getCoordinate().getLongitude() + "\n"
+                                     + "Lat: " + plant.getCoordinate().getLatitude();
                 mMap.addMarker(new MarkerOptions().position(latLng)
                         .title(plant.getName())
+                        .snippet(snippetText)
                         .icon(BitmapDescriptorFactory.fromResource(getIcon(plant.getType()))));
             }
         }
@@ -189,7 +195,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         // Turn on the My Location layer and the related control on the map.
         updateLocationUI();
-
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
 
@@ -280,6 +286,36 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         } catch (SecurityException e)  {
             //Log.e("Exception: %s", e.getMessage(), e);
+        }
+    }
+
+    class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+        private final View mWindow;
+        private final View mContents;
+
+        CustomInfoWindowAdapter() {
+            mWindow = getLayoutInflater().inflate(R.layout.map_item_info, null);
+            mContents = getLayoutInflater().inflate(R.layout.map_item_info, null);
+        }
+
+        private void render(Marker marker, View view) {
+            TextView tvTitle = view.findViewById(R.id.title);
+            TextView tvSnippet = view.findViewById(R.id.snippet);
+
+            tvTitle.setText(marker.getTitle());
+            tvSnippet.setText(marker.getSnippet());
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            render(marker, mWindow);
+            return mWindow;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            render(marker, mWindow);
+            return mWindow;
         }
     }
 }
