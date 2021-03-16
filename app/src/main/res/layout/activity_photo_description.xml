@@ -109,27 +109,27 @@
             android:text="30"
             android:textColor="#199589"/>
 
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:alpha="0.80"
-            app:backgroundTint="#199589"
-            android:onClick="onSave"
-            android:text="Сохранить" />
-
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight ="true"
+            android:layout_alignParentRight ="false"
             android:layout_alignParentBottom = "true"
             android:alpha="0.80"
             app:backgroundTint="#199589"
             android:onClick="onCancel"
             android:text="Отмена" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight ="true"
+            android:layout_alignParentBottom="true"
+            android:alpha="0.80"
+            app:backgroundTint="#199589"
+            android:onClick="onSave"
+            android:text="Сохранить" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,9 @@
 package com.example.gribyandrasteniyamap.service.http;
 
+import android.util.Base64;
 import android.util.Log;
+
+import com.example.gribyandrasteniyamap.view.model.User;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -18,8 +21,14 @@ import static android.content.ContentValues.TAG;
 public class HttpClient {
 
     @Inject
+    User user;
+
+    @Inject
     public HttpClient() {
     }
+
+    private final String USERNAME_COOKIE = "user";
+    private final String DEVICENUMBER_COOKIE = "device";
 
     public Response getHttpResponse(String url) {
         OkHttpClient httpClient = new OkHttpClient();
@@ -40,9 +49,11 @@ public class HttpClient {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), content);
 
         Request request = new Request.Builder()
+                .header("Cookie", getCookies())
                 .url(url)
                 .post(requestBody)
                 .build();
+
         try {
             return getHttpClient().newCall(request).execute();
         } catch (IOException e) {
@@ -57,5 +68,15 @@ public class HttpClient {
                 .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .build();
+    }
+
+    private String getCookies() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (user.getName() != null) {
+            String encode = Base64.encodeToString(user.getName().getBytes(), Base64.NO_WRAP);
+            stringBuilder.append(String.format("%s=%s", USERNAME_COOKIE, encode)).append(";");
+        }
+        stringBuilder.append(String.format("%s=%s", DEVICENUMBER_COOKIE, user.getDeviceNumber()));
+        return stringBuilder.toString();
     }
 }

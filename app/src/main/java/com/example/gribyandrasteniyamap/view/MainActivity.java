@@ -10,16 +10,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.service.CameraService;
 import com.example.gribyandrasteniyamap.service.LocationService;
 import com.example.gribyandrasteniyamap.utils.Util;
+import com.example.gribyandrasteniyamap.view.model.User;
 
 import javax.inject.Inject;
 
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     LocationService locationService;
 
+    @Inject
+    User user;
+
     private final String TAG = "MainActivity";
     private int orientation;
 
@@ -47,6 +53,15 @@ public class MainActivity extends AppCompatActivity {
         Util.setFullScreen(this);
         setContentView(R.layout.activity_main);
         orientation = Configuration.ORIENTATION_PORTRAIT;
+
+        if (user.getName() == null) {
+            FragmentManager manager = getSupportFragmentManager();
+            NameDialogFragment nameDialogFragment = new NameDialogFragment();
+            nameDialogFragment.show(manager, "nameDialog");
+        } else {
+            TextView textView = findViewById(R.id.userTextView);
+            textView.setText(user.getName());
+        }
     }
 
     public void onCameraButtonClick(View view) {
@@ -63,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
     public void openMap(View view) {
         Intent intent = new Intent(this, MapActivity.class);
         startActivityForResult(intent, IntentRequestCode.REQUEST_MAP.getCode());
+    }
+
+    public void onClick(View view) {
     }
 
     @SuppressLint("CheckResult")
