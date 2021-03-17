@@ -54,7 +54,7 @@ public class NameDialogFragment extends AppCompatDialogFragment {
 
         User user = User.builder()
                 .name(name)
-                .deviceNumber(Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID))
+                .deviceName(Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID))
                 .build();
 
         Toothpick.reset();

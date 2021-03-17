@@ -10,7 +10,10 @@ import com.example.gribyandrasteniyamap.module.AdapterModule;
 import com.example.gribyandrasteniyamap.module.DatabaseModule;
 import com.example.gribyandrasteniyamap.module.ServiceModule;
 import com.example.gribyandrasteniyamap.module.UserModule;
+import com.example.gribyandrasteniyamap.service.ServerScheduler;
 import com.example.gribyandrasteniyamap.view.model.User;
+
+import javax.inject.Inject;
 
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -21,6 +24,9 @@ public final class App extends Application {
 
     public static SharedPreferences sharedPreferences;
 
+    @Inject
+    ServerScheduler scheduler;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -28,11 +34,11 @@ public final class App extends Application {
 
         sharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         String name = sharedPreferences.contains(APP_PREFERENCES_USER) ? sharedPreferences.getString(APP_PREFERENCES_USER, "") : null;
-        String deviceNumber = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceName = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         User user = User.builder()
                 .name(name)
-                .deviceNumber(deviceNumber)
+                .deviceName(deviceName)
                 .build();
 
         appScope.installModules(new DatabaseModule(getApplicationContext()),
@@ -41,6 +47,8 @@ public final class App extends Application {
                 new UserModule(user)
         );
 
+        Toothpick.inject(this, Toothpick.openScope("APP"));
 
+        scheduler.run();
     }
 }

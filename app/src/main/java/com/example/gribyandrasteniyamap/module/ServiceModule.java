@@ -1,6 +1,7 @@
 package com.example.gribyandrasteniyamap.module;
 
 import com.example.gribyandrasteniyamap.service.CameraService;
+import com.example.gribyandrasteniyamap.service.ServerScheduler;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.service.http.HttpClient;
 
@@ -12,6 +13,7 @@ public class ServiceModule extends Module {
         bind(PlantService.class);
         bind(CameraService.class);
         bind(HttpClient.class).singleton();
+        bind(ServerScheduler.class);
     }
 
 }

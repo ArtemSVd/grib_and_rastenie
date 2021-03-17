@@ -21,6 +21,7 @@
         android:layout_margin="10dp"
         android:layout_alignStart="@id/map"
         android:onClick="openSearch"
+        android:background="@null"
         android:src="@drawable/search"/>
 
     <LinearLayout

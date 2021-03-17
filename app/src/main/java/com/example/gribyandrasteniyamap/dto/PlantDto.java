@@ -2,6 +2,7 @@ package com.example.gribyandrasteniyamap.dto;
 
 import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
+import com.example.gribyandrasteniyamap.view.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -10,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -18,6 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class PlantDto {
     private Long id;
 
@@ -34,4 +37,6 @@ public class PlantDto {
     private Coordinate coordinate;
 
     private boolean isLocal;
+
+    private User user;
 }
