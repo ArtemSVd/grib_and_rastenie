@@ -11,11 +11,32 @@
         android:id="@+id/mainlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="100"
         android:background="@drawable/mashrooms_vert"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:weightSum="100">
 
         <LinearLayout
+            android:id="@+id/main_progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="@drawable/vert_description"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/main_topPanel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="35"
@@ -38,6 +59,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/main_bottomPanel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="70"

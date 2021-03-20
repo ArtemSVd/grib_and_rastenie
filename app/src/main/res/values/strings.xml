@@ -26,4 +26,5 @@
     <string name="gpsOn">GPS is ON</string>
     <string name="saved">Saved</string>
     <string name="gpsRequired">GPS is required to be turned on</string>
+    <string name="phDescrError">An error occurred while loading</string>
 </resources>

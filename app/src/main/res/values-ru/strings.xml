@@ -26,4 +26,5 @@
     <string name="gpsOn">GPS включен</string>
     <string name="saved">Сохранено</string>
     <string name="gpsRequired">Необходимо включить GPS</string>
+    <string name="phDescrError">Произошла ошибка при загрузке</string>
 </resources>

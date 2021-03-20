@@ -89,13 +89,14 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IntentRequestCode.REQUEST_IMAGE_CAPTURE.getCode()) {
             if (resultCode == CameraService.PHOTO_ADDED) {
-                // todo: включить какую-нибудь крутилку
+                changeElementsVisibility(true);
                 Observable.fromCallable(() -> cameraService.callback())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::handleCameraSuccessResult, this::handleCameraError);
             }
         } else if (requestCode == IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode()) {
+            changeElementsVisibility(false);
             if (resultCode == IntentRequestCode.REQUEST_SAVE_PLANT.getCode()) {
                 Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show();
             }
@@ -114,13 +115,12 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PhotoDescriptionActivity.class);
         intent.putExtra("id", id);
         startActivityForResult(intent, IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode());
-        // todo: отключить какую-нибудь крутилку
     }
 
     private void handleCameraError(Throwable throwable) {
         Log.d(TAG, "onActivityResult: ошибка");
-        //todo: обработка ошибки
-        // todo: отключить какую-нибудь крутилку
+        Toast.makeText(this, R.string.camera_error, Toast.LENGTH_SHORT).show();
+        changeElementsVisibility(false);
     }
 
     @Override
@@ -164,6 +164,13 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         setBackgroundImage(orientation);
+    }
+
+    private void changeElementsVisibility(boolean enableProgressBar) {
+        findViewById(R.id.main_topPanel).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.main_bottomPanel).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+
+        findViewById(R.id.main_progressBar).setVisibility(enableProgressBar ? View.VISIBLE : View.GONE);
     }
 
 }

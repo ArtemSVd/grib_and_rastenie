@@ -72,7 +72,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
         configure();
 
-//        changeElementsVisibility();
+        changeElementsVisibility(true);
 
         getPlant(id);
     }
@@ -138,8 +138,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             fillFields(plant);
         }
 
-        Log.d("notag", "onActivityResult: йоу");
-//        changeElementsVisibility();
+        changeElementsVisibility(false);
     }
 
     private void fillFields(Plant plant) {
@@ -164,8 +163,9 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
     }
 
     private void handleError(Throwable throwable) {
-        Log.d("notag", "onActivityResult: что-то не пошло");
-        //todo: вернуться на главную активность, показать ошибку пользователю
+        Log.d(TAG, "onActivityResult: " + throwable.getMessage());
+        Toast.makeText(this, getString(R.string.phDescrError), Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -211,6 +211,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void deletePlant() {
         File file = new File(plant.getFilePath());
         if (file.exists()) {
@@ -222,14 +223,16 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         }
     }
 
-    private void changeElementsVisibility() {
-        int visibility = findViewById(R.id.photo).getVisibility();
-        findViewById(R.id.photo).setVisibility(visibility == View.GONE ? View.VISIBLE : View.GONE);
-        findViewById(R.id.name).setVisibility(visibility == View.GONE ? View.VISIBLE : View.GONE);
-        findViewById(R.id.description).setVisibility(visibility == View.GONE ? View.VISIBLE : View.GONE);
-        findViewById(R.id.kingdomType).setVisibility(visibility == View.GONE ? View.VISIBLE : View.GONE);
+    private void changeElementsVisibility(boolean enableProgressBar) {
+        findViewById(R.id.LinerLayout2).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.longitudeText).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.longitude).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.latitudeText).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.latitude).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.cancelButton).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
+        findViewById(R.id.saveButton).setVisibility(enableProgressBar ? View.GONE : View.VISIBLE);
 
-        findViewById(R.id.progress_bar).setVisibility(visibility);
+        findViewById(R.id.progress_bar).setVisibility(enableProgressBar ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -247,11 +250,12 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void updatePlant(Plant plant, Consumer<Integer> successCallback) {
         Observable.fromCallable(() -> plantService.update(plant))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(r -> successCallback.accept(r));
+                .subscribe(successCallback::accept);
     }
 
 
