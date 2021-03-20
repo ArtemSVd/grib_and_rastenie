@@ -9,9 +9,11 @@ import java.util.List;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "kingdomType",
@@ -19,7 +21,9 @@ import lombok.Getter;
 })
 public class PlantsRequestParams {
     @JsonProperty("kingdomTypes")
-    private final List<KingdomType> kingdomTypes;
+    private List<KingdomType> kingdomTypes;
     @JsonProperty("name")
-    private final String name;
+    private String name;
+    @JsonProperty("excludedPlantIds")
+    private List<Integer> excludedPlantIds;
 }

@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.gribyandrasteniyamap.R;
+import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
@@ -186,8 +187,11 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             plant.setName(nameView.getText().toString());
             plant.setDescription(descriptionView.getText().toString());
 
-            plant.getCoordinate().setLatitude(latitudeView.getText().toString());
-            plant.getCoordinate().setLongitude(longitudeView.getText().toString());
+            plant.setCoordinate(Coordinate.builder()
+                    .latitude(latitudeView.getText().toString())
+                    .longitude(longitudeView.getText().toString())
+                    .build()
+            );
 
             plant.setSynchronized(false);
 

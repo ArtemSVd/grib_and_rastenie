@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -104,6 +105,7 @@ public class PlantService {
             .map(id -> appDatabase.plantDao().getById(id))
             .forEach(plant -> {
                 plant.setSynchronized(true);
+                plant.setSyncDate(new Date());
                 appDatabase.plantDao().update(plant);
             });
 
@@ -168,6 +170,9 @@ public class PlantService {
     }
 
     private List<PlantDto> getPlantsFromServer(PlantsRequestParams params) throws IOException {
+        List<Integer> excludedPlantIds = appDatabase.plantDao().getExcludedPlantIds();
+        params.setExcludedPlantIds(excludedPlantIds);
+
         Response response = httpClient.postHttpResponse("http://172.22.206.1:8080/api/plants/list", SerializeUtil.getBytes(params));
         InputStream inputStream = getBodyResponse(response);
         if (inputStream != null) {

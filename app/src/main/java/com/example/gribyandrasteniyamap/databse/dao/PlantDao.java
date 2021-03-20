@@ -29,6 +29,9 @@ public interface PlantDao {
     @Query("SELECT * from Plant where isSynchronized = :isSynchronized and latitude is not null and longitude is not null limit :limit")
     List<Plant> getPlants(Integer limit, boolean isSynchronized);
 
+    @Query("SELECT id from Plant where isSynchronized = 0 and syncDate is not null")
+    List<Integer> getExcludedPlantIds();
+
     @Insert
     long insert(Plant plant);
 

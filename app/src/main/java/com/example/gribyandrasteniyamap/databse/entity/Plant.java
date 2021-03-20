@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey;
 
 import com.example.gribyandrasteniyamap.enums.KingdomType;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +36,7 @@ public class Plant {
     public Coordinate coordinate;
 
     public boolean isSynchronized;
+
+    public Date syncDate;
 
 }
