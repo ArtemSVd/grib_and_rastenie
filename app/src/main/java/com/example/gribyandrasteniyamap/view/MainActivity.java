@@ -97,14 +97,14 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (requestCode == IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode()) {
             if (resultCode == IntentRequestCode.REQUEST_SAVE_PLANT.getCode()) {
-                Toast.makeText(this, "Сохранено", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == IntentRequestCode.REQUEST_CHECK_GPS.getCode()) {
 
             if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(this, "GPS is turned on", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.gpsOn), Toast.LENGTH_SHORT).show();
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "GPS is required to be turned on", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.gpsRequired), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "GPS permission granted");
-                //locationService.getCurrentLocation();
             }
         }
     }

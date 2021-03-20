@@ -67,18 +67,6 @@ public class CameraService {
         return plantService.insertNewPlant(currentPhotoPath);
     }
 
-    //todo: вынести в отдельный сервис для работы с файловым хранилищем
-    public Bitmap getImage(String filePath, ContentResolver contentResolver) {
-        try {
-            File f = new File(filePath);
-            Uri selectedImage = Uri.fromFile(f);
-            return MediaStore.Images.Media.getBitmap(contentResolver, selectedImage);
-        } catch (IOException e) {
-            Log.e("CameraService", "callback: file not found");
-        }
-        return null;
-    }
-
     private boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -100,12 +88,12 @@ public class CameraService {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-//        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.camera_error), Toast.LENGTH_SHORT).show();
             }
 
             if (photoFile != null) {
@@ -116,14 +104,14 @@ public class CameraService {
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     activity.startActivityForResult(takePictureIntent, IntentRequestCode.REQUEST_IMAGE_CAPTURE.getCode());
                 } catch (Exception esx) {
-                    Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, context.getString(R.string.camera_error), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.camera_error), Toast.LENGTH_SHORT).show();
             }
-//        } else {
-//            Toast.makeText(context, "Произошла ошибка при работе с камерой", Toast.LENGTH_SHORT).show();
-//        }
+        } else {
+            Toast.makeText(context, context.getString(R.string.camera_error), Toast.LENGTH_SHORT).show();
+        }
     }
 
 

@@ -3,7 +3,6 @@ package com.example.gribyandrasteniyamap.view;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -22,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.gribyandrasteniyamap.R;
-import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
@@ -34,7 +32,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
-import java.util.List;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -181,7 +178,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             TextView latitudeView = findViewById(R.id.latitude);
 
             if (nameView.getText() == null || nameView.getText().toString().replaceAll(" ", "").isEmpty()) {
-                Toast.makeText(this, "Заполните название!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.enterName), Toast.LENGTH_SHORT).show();
                 return;
             }
 

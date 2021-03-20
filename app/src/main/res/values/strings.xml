@@ -8,4 +8,22 @@
     <string name="kingdomType_mushrooms">Mushrooms</string>
     <string name="kingdomType_plants">Plants</string>
     <string name="title_activity_map">Map</string>
+    <string name="camera">Camera</string>
+    <string name="map">Map</string>
+    <string name="search">Search</string>
+    <string name="type">Type</string>
+    <string name="onlyLocal">Only local data</string>
+    <string name="name">Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="enterName">Enter a name</string>
+    <string name="enterDescription">Enter a description</string>
+    <string name="longitude">Longitude :</string>
+    <string name="zero">0</string>
+    <string name="latitude">Latitude :</string>
+    <string name="save">Save</string>
+    <string name="enterUserName">Enter your name:</string>
+    <string name="camera_error">An error occurred while working with the camera</string>
+    <string name="gpsOn">GPS is ON</string>
+    <string name="saved">Saved</string>
+    <string name="gpsRequired">GPS is required to be turned on</string>
 </resources>

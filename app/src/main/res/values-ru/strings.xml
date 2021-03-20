@@ -8,4 +8,22 @@
     <string name="kingdomType_no">Не выбрано</string>
     <string name="kingdomType_mushrooms">Грибы</string>
     <string name="kingdomType_plants">Растения</string>
+    <string name="camera">Камера</string>
+    <string name="map">Карта</string>
+    <string name="search">Поиск</string>
+    <string name="type">Тип</string>
+    <string name="onlyLocal">Только локальные данные</string>
+    <string name="name">Наименование</string>
+    <string name="cancel">Отмена</string>
+    <string name="enterName">Введите наименование</string>
+    <string name="enterDescription">Введите описание</string>
+    <string name="longitude">Долгота :</string>
+    <string name="zero">0</string>
+    <string name="latitude">Широта :</string>
+    <string name="save">Сохранить</string>
+    <string name="enterUserName">Введите имя:</string>
+    <string name="camera_error">Произошла ошибка при работе с камерой</string>
+    <string name="gpsOn">GPS включен</string>
+    <string name="saved">Сохранено</string>
+    <string name="gpsRequired">Необходимо включить GPS</string>
 </resources>

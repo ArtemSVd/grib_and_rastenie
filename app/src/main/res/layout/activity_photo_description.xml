@@ -50,15 +50,13 @@
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
                 android:padding="5dp"
-                android:hint="Введите наименование"
-                android:text=""
+                android:hint="@string/enterName"
                 android:visibility="visible" />
 
             <Spinner
                 android:id="@+id/kingdomType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
                 android:padding="15dp"
@@ -74,9 +72,8 @@
                 android:layout_marginBottom="10dp"
                 android:layout_weight="62"
                 android:background="#FFFFFF"
-                android:hint="Введите описание"
+                android:hint="@string/enterDescription"
                 android:gravity="start"
-                android:text=""
                 android:visibility="visible" />
 
         </LinearLayout>
@@ -88,7 +85,7 @@
             android:layout_toStartOf="@id/longitude"
             android:background="#66FFFFFF"
             android:padding="5dp"
-            android:text="Долгота: "
+            android:text="@string/longitude"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -99,7 +96,7 @@
             android:layout_alignParentEnd="true"
             android:background="#66FFFFFF"
             android:padding="5dp"
-            android:text="50"
+            android:text="@string/zero"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -111,7 +108,7 @@
             android:layout_marginTop="30sp"
             android:background="#66FFFFFF"
             android:padding="5dp"
-            android:text="Широта: "
+            android:text="@string/latitude"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -123,7 +120,7 @@
             android:layout_marginTop="30sp"
             android:background="#66FFFFFF"
             android:padding="5dp"
-            android:text="30"
+            android:text="@string/zero"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -136,7 +133,7 @@
             android:alpha="0.80"
             app:backgroundTint="#199589"
             android:onClick="onCancel"
-            android:text="Отмена" />
+            android:text="@string/cancel" />
 
         <Button
             android:id="@+id/saveButton"
@@ -147,7 +144,7 @@
             android:alpha="0.80"
             app:backgroundTint="#199589"
             android:onClick="onSave"
-            android:text="Сохранить" />
+            android:text="@string/save" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

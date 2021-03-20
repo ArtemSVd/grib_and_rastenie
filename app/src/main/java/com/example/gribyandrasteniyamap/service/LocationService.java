@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +59,7 @@ public class LocationService {
             }
             i++;
             for(Location location: locationResult.getLocations()) {
-                //Log.d(TAG, "onLocationResult: " + location.toString());
+                Log.d(TAG, "onLocationResult: " + location.toString());
                 curPos = location;
                 TextView tvLong = activity.findViewById(R.id.longitude);
                 tvLong.setText(String.valueOf(location.getLongitude()));
@@ -95,7 +96,7 @@ public class LocationService {
         result.addOnCompleteListener(task -> {
             try {
                 LocationSettingsResponse response = task.getResult(ApiException.class);
-                Toast.makeText(activity, "GPS is ON", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, context.getString(R.string.gpsOn), Toast.LENGTH_SHORT).show();
             } catch (ApiException e) {
                 switch (e.getStatusCode()) {
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -104,7 +105,7 @@ public class LocationService {
                             ResolvableApiException resolvableApiException = (ResolvableApiException) e;
                             resolvableApiException.startResolutionForResult(activity, IntentRequestCode.REQUEST_CHECK_GPS.getCode());
                         } catch (IntentSender.SendIntentException sendIntentException) {
-                            // todo
+                            Log.d(TAG, sendIntentException.getMessage());
                         }
                         break;
 
@@ -113,27 +114,6 @@ public class LocationService {
                 }
             }
         });
-    }
-
-    public void getCurrentLocation(Context cntxt, Activity actvt, Consumer<Location> function) {
-        context = cntxt;
-        activity = actvt;
-        FusedLocationProviderClient fusedLocationProviderClient;
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                fusedLocationProviderClient.getLastLocation()
-                        .addOnSuccessListener(location -> {
-                            if (location != null) {
-                                function.accept(location);
-                            }
-                        });
-            } else {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, IntentRequestCode.REQUEST_GET_GPS.getCode());
-            }
-        }
     }
 
     public void getLocationPermission(Context context, Activity activity) {

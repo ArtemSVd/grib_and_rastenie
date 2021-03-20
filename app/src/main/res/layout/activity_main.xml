@@ -7,7 +7,6 @@
 
     tools:context=".view.MainActivity">
 
-
     <LinearLayout
         android:id="@+id/mainlayout"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:weightSum="100"
         android:background="@drawable/mashrooms_vert"
         android:orientation="vertical" >
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,8 +33,7 @@
             <TextView
                 android:id="@+id/userTextView"
                 android:layout_width="127dp"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -61,7 +58,6 @@
                 android:layout_weight="20"
                 android:orientation="vertical">
 
-
                 <Button
                     android:id="@+id/button"
                     android:layout_width="match_parent"
@@ -70,7 +66,7 @@
                     android:layout_weight="1"
                     android:alpha="0.80"
                     android:onClick="openGallery"
-                    android:text="Gallery"
+                    android:text="@string/gallery"
                     app:backgroundTint="#199589" />
 
                 <Button
@@ -82,7 +78,7 @@
                     android:onClick="onCameraButtonClick"
                     android:alpha="0.80"
                     app:backgroundTint="#199589"
-                    android:text="Camera" />
+                    android:text="@string/camera" />
 
                 <Button
                     android:id="@+id/button3"
@@ -91,17 +87,12 @@
                     android:layout_weight="1"
                     android:alpha="0.80"
                     android:onClick="openMap"
-                    android:text="Map"
+                    android:text="@string/map"
                     app:backgroundTint="#199589" />
             </LinearLayout>
 
-
-
         </LinearLayout>
 
-
-
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

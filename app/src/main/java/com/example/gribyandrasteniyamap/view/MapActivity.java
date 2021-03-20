@@ -140,8 +140,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 LatLng latLng = new LatLng(Double.parseDouble(coordinate.latitude), Double.parseDouble(coordinate.longitude));
 
                 String snippetText = plant.getType().toString() + "\n" + plant.getDescription() + "\n"
-                                     + "Long: " + plant.getCoordinate().getLongitude() + "\n"
-                                     + "Lat: " + plant.getCoordinate().getLatitude();
+                                     + getString(R.string.longitude) + plant.getCoordinate().getLongitude() + "\n"
+                                     + getString(R.string.latitude) + plant.getCoordinate().getLatitude();
                 mMap.addMarker(new MarkerOptions().position(latLng)
                         .title(plant.getName())
                         .snippet(snippetText)
@@ -253,8 +253,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = task.getResult();
                             if (lastKnownLocation != null) {
-                                LatLng curPos = new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
-                                mMap.addMarker(new MarkerOptions().position(curPos).title("Marker in Sydney"));
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastKnownLocation.getLatitude(),
                                                 lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
