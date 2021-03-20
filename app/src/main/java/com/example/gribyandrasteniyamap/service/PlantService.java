@@ -65,16 +65,18 @@ public class PlantService {
     }
 
     @SuppressLint("CheckResult")
-    public void getPlants(PlantsRequestParams params, Consumer<List<PlantDto>> callback) {
-        Observable.fromCallable(() -> getPlantsFromDb(params))
+    public void getPlants(PlantsRequestParams params, Consumer<List<PlantDto>> callback, boolean onlyLocal) {
+        Observable.fromCallable(() -> getPlantsFromDb(params, onlyLocal))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(callback::accept);
 
-        Observable.fromCallable(() -> getPlantsFromServer(params))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(callback::accept);
+        if (!onlyLocal) {
+            Observable.fromCallable(() -> getPlantsFromServer(params))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(callback::accept);
+        }
     }
 
     public void loadOnServer() {
@@ -116,11 +118,11 @@ public class PlantService {
         return file.exists() ? file : null;
     }
 
-    private List<PlantDto> getPlantsFromDb(PlantsRequestParams params) throws IOException {
+    private List<PlantDto> getPlantsFromDb(PlantsRequestParams params, boolean onlyLocal) throws IOException {
         List<String> types = params.getKingdomTypes().stream().map(KingdomType::name).collect(Collectors.toList());
 
         List<Plant> plants;
-        if (Boolean.TRUE.equals(checkAvailable())) {
+        if (Boolean.TRUE.equals(checkAvailable()) && !onlyLocal) {
             plants = appDatabase.plantDao().getPlants(params.getName(), types, false);
         } else {
             plants = appDatabase.plantDao().getPlants(params.getName(), types);

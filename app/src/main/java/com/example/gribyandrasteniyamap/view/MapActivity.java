@@ -56,6 +56,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private final List<CheckBox> checkBoxes = new ArrayList<>();
     private ProgressBar progressBar;
     private static int COUNT = 0;
+    private static int numOfRequest = 2;
+    private CheckBox isLocalCheckBox;
 
     private GoogleMap mMap;
     public boolean locationPermissionGranted;
@@ -111,6 +113,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         cancelSearch(null);
         mMap.clear();
 
+        isLocalCheckBox = findViewById(R.id.checkBoxOnlyLocal);
+
         List<KingdomType> checkedTypes = checkBoxes.stream()
                 .filter(CompoundButton::isChecked)
                 .map(View::getId)
@@ -123,7 +127,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 .name(name)
                 .kingdomTypes(checkedTypes.isEmpty() ? Arrays.asList(KingdomType.values()) : checkedTypes).build();
 
-        plantService.getPlants(params, this::renderMarkers);
+        plantService.getPlants(params, this::renderMarkers, isLocalCheckBox.isChecked());
+        numOfRequest = isLocalCheckBox.isChecked() ? 1 : 2;
     }
 
     private void renderMarkers(List<PlantDto> plants) {
@@ -147,7 +152,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         // Костыль, не придумал как сделать по-другому
         COUNT++;
-        if (COUNT == 2) {
+        if (COUNT == numOfRequest) {
             progressBar.setVisibility(View.GONE);
             COUNT = 0;
         }
