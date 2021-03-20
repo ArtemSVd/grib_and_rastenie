@@ -36,11 +36,10 @@
                 android:id="@+id/photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
                 android:layout_weight="45"
-                android:background="#950F0F"
                 android:gravity="center"
                 android:visibility="visible"
+                android:scaleType="centerCrop"
                 tools:srcCompat="@tools:sample/avatars" />
 
 
@@ -48,8 +47,6 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textView"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
                 android:padding="5dp"
@@ -61,7 +58,6 @@
                 android:id="@+id/kingdomType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/name"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
@@ -74,12 +70,10 @@
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/kingdomType"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="62"
-                android:background="#FFEDED"
+                android:background="#FFFFFF"
                 android:hint="Введите описание"
                 android:gravity="start"
                 android:text=""
@@ -88,32 +82,56 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/longitudeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/longitude"
+            android:background="#66FFFFFF"
+            android:padding="5dp"
+            android:text="Долгота: "
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
             android:id="@+id/longitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/latitude"
+            android:layout_alignParentEnd="true"
+            android:background="#66FFFFFF"
             android:padding="5dp"
-            android:background="#EFEFEF"
             android:text="50"
-            android:textSize="25dp"
-            android:textColor="#199589"/>
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/latitudeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/latitude"
+            android:layout_marginTop="30sp"
+            android:background="#66FFFFFF"
+            android:padding="5dp"
+            android:text="Широта: "
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/latitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:background="#EFEFEF"
-            android:textSize="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="30sp"
+            android:background="#66FFFFFF"
             android:padding="5dp"
             android:text="30"
-            android:textColor="#199589"/>
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight ="false"
+            android:layout_alignParentEnd ="false"
             android:layout_alignParentBottom = "true"
             android:alpha="0.80"
             app:backgroundTint="#199589"
@@ -124,7 +142,7 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight ="true"
+            android:layout_alignParentEnd ="true"
             android:layout_alignParentBottom="true"
             android:alpha="0.80"
             app:backgroundTint="#199589"

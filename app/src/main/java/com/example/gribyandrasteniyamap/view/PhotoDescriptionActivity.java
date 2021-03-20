@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -58,25 +59,42 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
     private Plant plant;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    boolean editMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Toothpick.inject(this, Toothpick.openScope("APP"));
         Util.setFullScreen(this);
         setContentView(R.layout.activity_photo_description);
-        changeElementsVisibility();
-        locationService.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        locationService.locationRequest = LocationRequest.create();
-        locationService.locationRequest.setInterval(4000);
-        locationService.locationRequest.setFastestInterval(2000);
-        locationService.locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        Intent intent = getIntent();
+        long id = intent.getLongExtra("id", -1L);
+        editMode = intent.getBooleanExtra("editMode", false);
+
+        configure();
+
+//        changeElementsVisibility();
+
+        getPlant(id);
+    }
+
+    private void configure() {
+        configureSpinner();
+        configureNameEditText();
+        if (!editMode) {
+            configureLocationService();
+        }
+    }
+
+    private void configureSpinner() {
         Spinner spinner = findViewById(R.id.kingdomType);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, KingdomType.nameValues(getApplicationContext()));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+    }
 
+    private void configureNameEditText() {
         InputFilter filter = (src, start, end, d, dstart, dend) -> {
             for (int i = start; i < end; i++) {
                 if (!Character.isLetter(src.charAt(i)) && !Character.isSpaceChar(src.charAt(i))) {
@@ -85,18 +103,21 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             }
             return null;
         };
+
         EditText nameView = findViewById(R.id.name);
         nameView.setFilters(new InputFilter[]{filter});
-        //locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
-        locationService.getLocationPermission(getApplicationContext(), this);
-        locationService.checkSettingsAndStartLocationUpdates(this);
-
-        Intent intent = getIntent();
-        long id = intent.getLongExtra("id", -1L);
-        getPlant(id);
-
     }
 
+    private void configureLocationService() {
+        locationService.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationService.locationRequest = LocationRequest.create();
+        locationService.locationRequest.setInterval(4000);
+        locationService.locationRequest.setFastestInterval(2000);
+        locationService.locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationService.getLocationPermission(getApplicationContext(), this);
+        locationService.checkSettingsAndStartLocationUpdates(this);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CheckResult")
@@ -115,8 +136,33 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
                 .load(plant.filePath)
                 .into(imageView);
 
+        if (editMode) {
+            fillFields(plant);
+        }
+
         Log.d("notag", "onActivityResult: йоу");
-        changeElementsVisibility();
+//        changeElementsVisibility();
+    }
+
+    private void fillFields(Plant plant) {
+        EditText name = findViewById(R.id.name);
+        name.setText(plant.getName());
+
+        EditText description = findViewById(R.id.description);
+        description.setText(plant.getDescription());
+
+        Spinner spinner = findViewById(R.id.kingdomType);
+
+        String typeString = getString(plant.getType().getStringId());
+        int i = KingdomType.nameValues(getApplicationContext()).indexOf(typeString);
+        spinner.setSelection(Math.max(i, 0));
+
+        if (plant.getCoordinate() != null) {
+            TextView tvLong = findViewById(R.id.longitude);
+            tvLong.setText(String.valueOf(plant.getCoordinate().getLongitude()));
+            TextView tvLat = findViewById(R.id.latitude);
+            tvLat.setText(String.valueOf(plant.getCoordinate().getLatitude()));
+        }
     }
 
     private void handleError(Throwable throwable) {
@@ -143,14 +189,10 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             plant.setName(nameView.getText().toString());
             plant.setDescription(descriptionView.getText().toString());
 
-            plant.setCoordinate(Coordinate.builder()
-                    .latitude(String.valueOf(locationService.curPos.getLatitude()))
-                    .longitude(String.valueOf(locationService.curPos.getLongitude()))
-                    .build()
-            );
-
             plant.getCoordinate().setLatitude(latitudeView.getText().toString());
             plant.getCoordinate().setLongitude(longitudeView.getText().toString());
+
+            plant.setSynchronized(false);
 
             updatePlant(plant, (r) -> {
                 setResult(IntentRequestCode.REQUEST_SAVE_PLANT.getCode());
@@ -161,6 +203,14 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
     }
 
     public void onCancel(View view) {
+        if (editMode) {
+            finish();
+        } else {
+            deletePlant();
+        }
+    }
+
+    private void deletePlant() {
         File file = new File(plant.getFilePath());
         if (file.exists()) {
             boolean delete = file.delete();
@@ -181,19 +231,6 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         findViewById(R.id.progress_bar).setVisibility(visibility);
     }
 
-    /*@RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == IntentRequestCode.REQUEST_GET_GPS.getCode()) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "GPS permission granted");
-
-                locationService.getCurrentLocation(getApplicationContext(), this, this::geolocationCallback);
-            }
-        }
-    }*/
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -207,26 +244,8 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
                 locationService.checkSettingsAndStartLocationUpdates(this);
             }
         }
-        //updateLocationUI();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void geolocationCallback(Location location) {
-        TextView tvLong = findViewById(R.id.longitude);
-        tvLong.setText(String.valueOf(location.getLongitude()));
-        TextView tvLat = findViewById(R.id.latitude);
-        tvLat.setText(String.valueOf(location.getLatitude()));
-
-        plant.setCoordinate(Coordinate.builder()
-                .latitude(String.valueOf(location.getLatitude()))
-                .longitude(String.valueOf(location.getLongitude()))
-                .build()
-        );
-        updatePlant(plant, (r) -> {});
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updatePlant(Plant plant, Consumer<Integer> successCallback) {
         Observable.fromCallable(() -> plantService.update(plant))
                 .subscribeOn(Schedulers.io())

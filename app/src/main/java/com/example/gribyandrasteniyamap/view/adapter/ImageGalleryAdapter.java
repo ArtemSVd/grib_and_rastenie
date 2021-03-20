@@ -28,6 +28,7 @@ import com.example.gribyandrasteniyamap.service.PlantService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -46,6 +47,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
 
     private Context mContext;
     private List<Plant> plants;
+    private Consumer<Long> onClickFunction;
     private final List<Integer> selectedPositions = new ArrayList<>();
 
     public void setmContext(Context mContext) {
@@ -56,6 +58,11 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
         this.plants = plants;
         notifyDataSetChanged();
     }
+
+    public void setOnClickFunction(Consumer<Long> onClickFunction) {
+        this.onClickFunction = onClickFunction;
+    }
+
 
     @NonNull
     @Override
@@ -132,6 +139,9 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
             if (position != RecyclerView.NO_POSITION) {
                 if (isSelectionMode()) {
                     processClick(position);
+                } else {
+                    Plant plant = plants.get(position);
+                    onClickFunction.accept(plant.getId());
                 }
             }
         }

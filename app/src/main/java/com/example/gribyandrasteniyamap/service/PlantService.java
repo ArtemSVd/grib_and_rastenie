@@ -139,6 +139,7 @@ public class PlantService {
                         .longitude(plant.getCoordinate().getLongitude())
                         .build())
                 .name(plant.getName())
+                .description(plant.getDescription())
                 .filePath(plant.getFilePath())
                 .type(plant.getType())
                 .id(plant.getId())

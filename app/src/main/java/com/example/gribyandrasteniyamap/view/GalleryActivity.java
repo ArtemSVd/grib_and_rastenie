@@ -7,12 +7,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
+import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 import com.example.gribyandrasteniyamap.view.adapter.ImageGalleryAdapter;
@@ -46,6 +48,13 @@ public class GalleryActivity extends AppCompatActivity {
         getPlants();
     }
 
+    private void openPhotoDescriptionActivity(Long plantId) {
+        Intent intent = new Intent(this, PhotoDescriptionActivity.class);
+        intent.putExtra("id", plantId);
+        intent.putExtra("editMode", true);
+        startActivityForResult(intent, IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode());
+    }
+
     @SuppressLint("CheckResult")
     private void getPlants() {
         plantViewModel.getAll().observe(this, plants -> {
@@ -66,6 +75,7 @@ public class GalleryActivity extends AppCompatActivity {
 
                 adapter.setmContext(this);
                 adapter.setPlants(plants);
+                adapter.setOnClickFunction(this::openPhotoDescriptionActivity);
                 recyclerView.setAdapter(adapter);
             }
         });
