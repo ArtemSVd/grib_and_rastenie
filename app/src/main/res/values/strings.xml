@@ -27,4 +27,14 @@
     <string name="saved">Saved</string>
     <string name="gpsRequired">GPS is required to be turned on</string>
     <string name="phDescrError">An error occurred while loading</string>
+    <string name="settings">Settings</string>
+    <string name="change_name">Change your name</string>
+    <string name="settings_scheduler">Automatic synchronization</string>
+    <string name="settings_sync">Automatically synchronize data with the server</string>
+    <string name="settings_force_sync">Forced synchronization</string>
+    <string name="sync">Sync</string>
+    <string name="sync_no_item">Missing items to sync</string>
+    <string name="sync_error">Synchronization error</string>
+    <string name="sync_serv_unavailable">Server unavailable</string>
+    <string name="sync_elements">Synced: %d elements</string>
 </resources>

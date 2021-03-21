@@ -5,32 +5,56 @@ import android.util.Log;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@Singleton
 public class ServerScheduler {
 
     @Inject
     PlantService plantService;
 
-    private final int LOAD_PERIOD = 60;
+    private final int LOAD_PERIOD = 5;
     private final String TAG = "ServerScheduler";
 
+    private Disposable disposable;
+
     @Inject
-    public ServerScheduler() {}
+    public ServerScheduler() {
+    }
 
     /**
      * Периодическая отправка данных на сервер
      */
-    // todo: сделать возможность отключения/включения задачи в зависимости от настроек
-    public Disposable run() {
-        return Observable.interval(LOAD_PERIOD, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
-                .doOnNext(x -> plantService.loadOnServer())
-                .doOnComplete(() -> Log.d(TAG, "Отправка остановлена"))
-                .subscribe();
+    public void run() {
+        if (!isEnabled()) {
+            disposable = Observable.interval(LOAD_PERIOD, TimeUnit.SECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .doOnNext(x -> plantService.loadOnServer())
+                    .doOnComplete(() -> Log.d(TAG, "Отправка остановлена"))
+                    .subscribe();
+        } else {
+            throw new RuntimeException();
+        }
     }
+
+    /**
+     * Отключение автоматической отправки данных
+     */
+    public void stop() {
+        if (isEnabled()) {
+            disposable.dispose();
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+    public boolean isEnabled() {
+        return disposable != null && !disposable.isDisposed();
+    }
+
 
 }

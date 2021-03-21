@@ -9,8 +9,9 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,9 @@ import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.service.CameraService;
 import com.example.gribyandrasteniyamap.service.LocationService;
+import com.example.gribyandrasteniyamap.service.PlantService;
+import com.example.gribyandrasteniyamap.service.ServerScheduler;
+import com.example.gribyandrasteniyamap.service.SharedPreferencesService;
 import com.example.gribyandrasteniyamap.utils.Util;
 import com.example.gribyandrasteniyamap.view.model.User;
 
@@ -30,6 +34,9 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
+
+import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.ENABLE_SCHEDULER;
+import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.USERNAME;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +49,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Inject
     User user;
+
+    @Inject
+    ServerScheduler scheduler;
+
+    @Inject
+    SharedPreferencesService sharedPreferencesService;
+
+    @Inject
+    PlantService plantService;
 
     private final String TAG = "MainActivity";
     private int orientation;
@@ -58,9 +74,10 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager manager = getSupportFragmentManager();
             NameDialogFragment nameDialogFragment = new NameDialogFragment();
             nameDialogFragment.show(manager, "nameDialog");
-        } else {
-            TextView textView = findViewById(R.id.userTextView);
-            textView.setText(user.getName());
+        }
+
+        if (sharedPreferencesService.getBooleanValueByKey(ENABLE_SCHEDULER)) {
+            scheduler.run();
         }
     }
 
@@ -80,7 +97,52 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, IntentRequestCode.REQUEST_MAP.getCode());
     }
 
-    public void onClick(View view) {
+    public void onSettingsClick(View view) {
+        findViewById(R.id.settings_view).setVisibility(View.VISIBLE);
+        EditText name = findViewById(R.id.settings_name);
+        name.setText(sharedPreferencesService.getStringValueByKey(USERNAME));
+
+        Switch schedulerSwitch = findViewById(R.id.settings_switch);
+        schedulerSwitch.setOnClickListener(this::onSwitchChanged);
+        schedulerSwitch.setChecked(sharedPreferencesService.getBooleanValueByKey(ENABLE_SCHEDULER));
+    }
+
+    private void onSwitchChanged(View view) {
+        Switch schedulerSwitch = view.findViewById(R.id.settings_switch);
+
+        boolean isEnabled = schedulerSwitch.isChecked();
+        sharedPreferencesService.setValue(ENABLE_SCHEDULER, isEnabled);
+
+        if (isEnabled) {
+            scheduler.run();
+        } else {
+            scheduler.stop();
+        }
+    }
+
+    public void onCloseSettingsClick(View view) {
+        findViewById(R.id.settings_view).setVisibility(View.GONE);
+    }
+
+    public void onSaveNameSetting(View view) {
+        EditText name = findViewById(R.id.settings_name);
+        sharedPreferencesService.setValue(USERNAME, name.getText().toString());
+        Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onSyncClick(View view) {
+        findViewById(R.id.sync_progressBar_layout).setVisibility(View.VISIBLE);
+        plantService.forceLoadOnServerNewThread(this::successSyncCallback, this::errorSyncCallback);
+    }
+
+    private void successSyncCallback(Integer syncCount) {
+        findViewById(R.id.sync_progressBar_layout).setVisibility(View.GONE);
+        Toast.makeText(this, String.format(getString(R.string.sync_elements), syncCount), Toast.LENGTH_SHORT).show();
+    }
+
+    private void errorSyncCallback(String message) {
+        findViewById(R.id.sync_progressBar_layout).setVisibility(View.GONE);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("CheckResult")

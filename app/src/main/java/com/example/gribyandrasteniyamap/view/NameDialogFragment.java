@@ -1,9 +1,9 @@
 package com.example.gribyandrasteniyamap.view;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -14,17 +14,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.example.gribyandrasteniyamap.App;
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.module.AdapterModule;
 import com.example.gribyandrasteniyamap.module.DatabaseModule;
 import com.example.gribyandrasteniyamap.module.ServiceModule;
+import com.example.gribyandrasteniyamap.module.SharedPreferencesModule;
 import com.example.gribyandrasteniyamap.module.UserModule;
+import com.example.gribyandrasteniyamap.service.SharedPreferencesService;
 import com.example.gribyandrasteniyamap.view.model.User;
+
+import javax.inject.Inject;
 
 import toothpick.Toothpick;
 
+import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.USERNAME;
+
 public class NameDialogFragment extends AppCompatDialogFragment {
+
+    @Inject
+    SharedPreferencesService sharedPreferencesService;
 
     @NonNull
     @Override
@@ -45,20 +53,17 @@ public class NameDialogFragment extends AppCompatDialogFragment {
         EditText editText = view.findViewById(R.id.input_text);
         String name = editText.getText().toString();
 
-        SharedPreferences mSettings = App.sharedPreferences;
-        if (mSettings != null) {
-            SharedPreferences.Editor editor = mSettings.edit();
-            editor.putString(App.APP_PREFERENCES_USER, name);
-            editor.apply();
-        }
+        sharedPreferencesService.setValue(USERNAME, name);
 
-        User user = User.builder()
+        @SuppressLint("HardwareIds") User user = User.builder()
                 .name(name)
                 .deviceName(Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID))
                 .build();
 
         Toothpick.reset();
-        Toothpick.openScope("APP").installModules(new DatabaseModule(getActivity()),
+        Toothpick.openScope("APP").installModules(
+                new SharedPreferencesModule(getActivity()),
+                new DatabaseModule(),
                 new ServiceModule(),
                 new AdapterModule(),
                 new UserModule(user)

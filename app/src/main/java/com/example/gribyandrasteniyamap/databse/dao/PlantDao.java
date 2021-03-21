@@ -32,6 +32,9 @@ public interface PlantDao {
     @Query("SELECT id from Plant where isSynchronized = 0 and syncDate is not null")
     List<Integer> getExcludedPlantIds();
 
+    @Query("SELECT count(1) from Plant where isSynchronized = 0")
+    Integer getNotSyncCount();
+
     @Insert
     long insert(Plant plant);
 

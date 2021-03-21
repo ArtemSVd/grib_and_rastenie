@@ -1,8 +1,10 @@
 package com.example.gribyandrasteniyamap.service;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.util.Log;
 
+import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.AppDatabase;
 import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
@@ -19,6 +21,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,9 +40,13 @@ public class PlantService {
     AppDatabase appDatabase;
 
     @Inject
+    Context context;
+
+    @Inject
     HttpClient httpClient;
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private final int LOAD_LIMIT = 5;
 
     @Inject
     public PlantService() {
@@ -80,10 +87,56 @@ public class PlantService {
         }
     }
 
+    public void forceLoadOnServerNewThread(Consumer<Integer> successCallback, Consumer<String> errorCallback) {
+        Observable.fromCallable(() -> {
+            forceLoadOnServer(successCallback, errorCallback);
+            return 0;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        e -> Log.e("", ""),
+                        e -> errorCallback.accept(e.getMessage()));
+    }
+
+    @SuppressLint("CheckResult")
+    public void forceLoadOnServer(Consumer<Integer> successCallback, Consumer<String> errorCallback) {
+        try {
+            Log.i("PlantService", "Принудительная загрузка данных на сервер");
+            if (Boolean.TRUE.equals(checkAvailable())) {
+                Log.i("PlantService", "Сервер доступен");
+                Integer notSyncCount = appDatabase.plantDao().getNotSyncCount();
+                int repeat = notSyncCount != null ? (int) Math.ceil(notSyncCount / (float) LOAD_LIMIT) : 0;
+
+                Log.i("PlantService", String.format("Количество запросов на отправку: %d", repeat));
+                if (repeat == 0) {
+                    throw new RuntimeException(context.getString(R.string.sync_no_item));
+                }
+
+                Observable.timer(2, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .repeat(repeat)
+                        .doOnNext(x -> loadOnServer())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnComplete(() -> successCallback.accept(notSyncCount))
+                        .subscribe(
+                                e -> Log.i("PlantService", e.toString()),
+                                e -> errorCallback.accept(context.getString(R.string.sync_error)));
+
+            } else {
+                Log.i("PlantService", "Сервер недоступен");
+                throw new RuntimeException(context.getString(R.string.sync_serv_unavailable));
+            }
+        } catch (IOException e) {
+            Log.e("PlantService", e.getMessage());
+            throw new RuntimeException(context.getString(R.string.sync_error));
+        }
+    }
+
     public void loadOnServer() {
         Log.i("PlantService", "Загрузка данных на сервер");
 
-        List<PlantDto> plants = appDatabase.plantDao().getPlants(5, false)
+        List<PlantDto> plants = appDatabase.plantDao().getPlants(LOAD_LIMIT, false)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -102,12 +155,12 @@ public class PlantService {
             List<Integer> loadedPlantsId = load(plants, files);
             Log.i("PlantService", "Идентификаторы загруженных сущностей: " + loadedPlantsId);
             loadedPlantsId.stream()
-            .map(id -> appDatabase.plantDao().getById(id))
-            .forEach(plant -> {
-                plant.setSynchronized(true);
-                plant.setSyncDate(new Date());
-                appDatabase.plantDao().update(plant);
-            });
+                    .map(id -> appDatabase.plantDao().getById(id))
+                    .forEach(plant -> {
+                        plant.setSynchronized(true);
+                        plant.setSyncDate(new Date());
+                        appDatabase.plantDao().update(plant);
+                    });
 
         } catch (IOException e) {
             Log.e("PlantService", "Ошибка при загрузке данных на сервер: " + e.getMessage());
