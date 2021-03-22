@@ -13,25 +13,16 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.example.gribyandrasteniyamap.R;
-import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
-import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 import com.example.gribyandrasteniyamap.view.adapter.ImageGalleryAdapter;
 import com.example.gribyandrasteniyamap.view.model.PlantViewModel;
-
-import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import toothpick.Toothpick;
 
 public class GalleryActivity extends AppCompatActivity {
-
-    @Inject
-    PlantService plantService;
 
     @Inject
     ImageGalleryAdapter adapter;
@@ -58,14 +49,7 @@ public class GalleryActivity extends AppCompatActivity {
     @SuppressLint("CheckResult")
     private void getPlants() {
         plantViewModel.getAll().observe(this, plants -> {
-            List<Plant> deletedPlants = plants.stream()
-                    .filter(p -> !(new File(p.getFilePath()).exists()))
-                    .peek(p -> plantViewModel.delete(p))
-                    .collect(Collectors.toList());
-
-            plants.removeAll(deletedPlants);
-
-            changeElementsVisible(plants.isEmpty());
+            changeElementsVisible(!plants.isEmpty());
 
             if (!plants.isEmpty()) {
                 RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 3);
@@ -81,11 +65,11 @@ public class GalleryActivity extends AppCompatActivity {
         });
     }
 
-    private void changeElementsVisible(boolean isEmpty) {
+    private void changeElementsVisible(boolean showGalleryList) {
         LinearLayout galleryEmpty = findViewById(R.id.galleryEmpty);
         LinearLayout galleryNotEmpty = findViewById(R.id.galleryNotEmpty);
 
-        galleryEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        galleryNotEmpty.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        galleryEmpty.setVisibility(showGalleryList ? View.GONE : View.VISIBLE);
+        galleryNotEmpty.setVisibility(showGalleryList ? View.VISIBLE : View.GONE);
     }
 }

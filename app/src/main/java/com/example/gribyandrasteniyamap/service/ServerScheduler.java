@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ServerScheduler {
 
     @Inject
-    PlantService plantService;
+    ServerSchedulerService serverSchedulerService;
 
     private final int LOAD_PERIOD = 5;
     private final String TAG = "ServerScheduler";
@@ -33,7 +33,7 @@ public class ServerScheduler {
         if (!isEnabled()) {
             disposable = Observable.interval(LOAD_PERIOD, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.io())
-                    .doOnNext(x -> plantService.loadOnServer())
+                    .doOnNext(x -> serverSchedulerService.loadOnServer())
                     .doOnComplete(() -> Log.d(TAG, "Отправка остановлена"))
                     .subscribe();
         } else {

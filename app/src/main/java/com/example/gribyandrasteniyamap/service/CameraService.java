@@ -3,11 +3,9 @@ package com.example.gribyandrasteniyamap.service;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -25,8 +23,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
@@ -58,11 +61,20 @@ public class CameraService {
         }
     }
 
+
+    @SuppressLint("CheckResult")
+    public void processCameraResult(Consumer<Long> successCallback, Consumer<Throwable> errorCallback) {
+        Observable.fromCallable(this::process)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(successCallback::accept, errorCallback::accept);
+    }
+
     /**
      * Метод для обработки успешного результата работы камеры
      * @return идентификатор новой записи в бд
      */
-    public long callback() {
+    public long process() {
         galleryAddPic();
         return plantService.insertNewPlant(currentPhotoPath);
     }

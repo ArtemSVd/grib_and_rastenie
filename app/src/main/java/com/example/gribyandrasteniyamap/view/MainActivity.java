@@ -22,17 +22,14 @@ import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.service.CameraService;
 import com.example.gribyandrasteniyamap.service.LocationService;
-import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.service.ServerScheduler;
 import com.example.gribyandrasteniyamap.service.SharedPreferencesService;
+import com.example.gribyandrasteniyamap.service.rx.RxSchedulePlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 import com.example.gribyandrasteniyamap.view.model.User;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
 
 import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.ENABLE_SCHEDULER;
@@ -57,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferencesService sharedPreferencesService;
 
     @Inject
-    PlantService plantService;
+    RxSchedulePlantService rxSchedulePlantService;
 
     private final String TAG = "MainActivity";
     private int orientation;
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSyncClick(View view) {
         findViewById(R.id.sync_progressBar_layout).setVisibility(View.VISIBLE);
-        plantService.forceLoadOnServerNewThread(this::successSyncCallback, this::errorSyncCallback);
+        rxSchedulePlantService.forceLoadOnServerNewThread(this::successSyncCallback, this::errorSyncCallback);
     }
 
     private void successSyncCallback(Integer syncCount) {
@@ -152,10 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == IntentRequestCode.REQUEST_IMAGE_CAPTURE.getCode()) {
             if (resultCode == CameraService.PHOTO_ADDED) {
                 changeElementsVisibility(true);
-                Observable.fromCallable(() -> cameraService.callback())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::handleCameraSuccessResult, this::handleCameraError);
+                cameraService.processCameraResult(this::handleCameraSuccessResult, this::handleCameraError);
             }
         } else if (requestCode == IntentRequestCode.REQUEST_PHOTO_DESCRIPTION.getCode()) {
             changeElementsVisibility(false);

@@ -23,23 +23,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.entity.Plant;
-import com.example.gribyandrasteniyamap.service.PlantService;
+import com.example.gribyandrasteniyamap.service.rx.RxPlantService;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
 public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapter.MViewHolder> {
 
     @Inject
-    PlantService plantService;
+    RxPlantService plantService;
 
     @Inject
     public ImageGalleryAdapter() {
@@ -195,17 +190,15 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
                 List<Integer> copyList = new ArrayList<>(selectedPositions);
                 copyList.forEach(s -> {
                     Plant plant = plants.get(s);
-                    new File(plant.getFilePath()).delete();
-                    Observable.fromCallable(() -> plantService.delete(plant))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(r -> {
-                                selectedPositions.remove((Integer) s);
-                                plants.remove(plant);
-                                notifyItemRemoved(s);
-                                notifyItemRangeChanged(s, selectedPositions.size());
-                                changeTopPanelVisible();
-                            });
+
+                    plantService.delete(plant, () -> {
+                        selectedPositions.remove((Integer) s);
+                        plants.remove(plant);
+                        notifyItemRemoved(s);
+                        notifyItemRangeChanged(s, selectedPositions.size());
+                        changeTopPanelVisible();
+                    });
+
                     Toast.makeText(mContext, String.format(mContext.getString(R.string.items_removed_message), getSelectedCount()), Toast.LENGTH_SHORT).show();
                 });
             });

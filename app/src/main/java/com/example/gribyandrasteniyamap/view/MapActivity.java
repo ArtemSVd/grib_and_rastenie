@@ -5,7 +5,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,9 +13,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.databse.entity.Coordinate;
@@ -24,7 +20,8 @@ import com.example.gribyandrasteniyamap.dto.PlantDto;
 import com.example.gribyandrasteniyamap.dto.PlantsRequestParams;
 import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
-import com.example.gribyandrasteniyamap.service.PlantService;
+import com.example.gribyandrasteniyamap.service.rx.RxPlantService;
+import com.example.gribyandrasteniyamap.view.adapter.CustomInfoWindowAdapter;
 import com.example.gribyandrasteniyamap.view.model.MarkerTag;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -34,7 +31,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -51,18 +47,19 @@ import toothpick.Toothpick;
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     @Inject
-    PlantService plantService;
+    RxPlantService rxPlantService;
 
     private final List<CheckBox> checkBoxes = new ArrayList<>();
-    private ProgressBar progressBar;
+
     private static int COUNT = 0;
     private static int numOfRequest = 2;
-    private CheckBox isLocalCheckBox;
 
     private GoogleMap mMap;
+
     public boolean locationPermissionGranted;
     FusedLocationProviderClient fusedLocationProviderClient;
     Location lastKnownLocation;
+
     LatLng defaultLocation = new LatLng(-34, 151);
     private static final int DEFAULT_ZOOM = 15;
 
@@ -78,8 +75,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        progressBar = findViewById(R.id.progressBar);
 
         LinearLayout linearLayout = findViewById(R.id.checkBoxGroup);
         Arrays.stream(KingdomType.values())
@@ -108,12 +103,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     private void find() {
-        progressBar.setVisibility(View.VISIBLE);
+        findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
 
         cancelSearch(null);
         mMap.clear();
 
-        isLocalCheckBox = findViewById(R.id.checkBoxOnlyLocal);
+        CheckBox isLocalCheckBox = findViewById(R.id.checkBoxOnlyLocal);
 
         List<KingdomType> checkedTypes = checkBoxes.stream()
                 .filter(CompoundButton::isChecked)
@@ -127,7 +122,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 .name(name)
                 .kingdomTypes(checkedTypes.isEmpty() ? Arrays.asList(KingdomType.values()) : checkedTypes).build();
 
-        plantService.getPlants(params, this::renderMarkers, isLocalCheckBox.isChecked());
+        rxPlantService.getPlants(params, this::renderMarkers, isLocalCheckBox.isChecked());
         numOfRequest = isLocalCheckBox.isChecked() ? 1 : 2;
     }
 
@@ -153,7 +148,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         // Костыль, не придумал как сделать по-другому
         COUNT++;
         if (COUNT == numOfRequest) {
-            progressBar.setVisibility(View.GONE);
+            findViewById(R.id.progressBar).setVisibility(View.GONE);
             COUNT = 0;
         }
     }
@@ -270,45 +265,5 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         } catch (SecurityException e)  {
             //Log.e("Exception: %s", e.getMessage(), e);
         }
-    }
-
-    class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener {
-        private final View mWindow;
-        private final View mContents;
-        private final Context context;
-
-        CustomInfoWindowAdapter(Context context) {
-            this.context = context;
-            mWindow = getLayoutInflater().inflate(R.layout.map_item_info, null);
-            mContents = getLayoutInflater().inflate(R.layout.map_item_info, null);
-
-        }
-
-        private void render(Marker marker, View view) {
-            TextView tvTitle = view.findViewById(R.id.title);
-            TextView tvSnippet = view.findViewById(R.id.snippet);
-
-            tvTitle.setText(marker.getTitle());
-            tvSnippet.setText(marker.getSnippet());
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            render(marker, mWindow);
-            return mWindow;
-        }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-            render(marker, mWindow);
-            return mWindow;
-        }
-
-        @Override
-        public void onInfoWindowClick(Marker marker) {
-            MarkerTag markerTag = (MarkerTag) marker.getTag();
-            Toast.makeText(context, markerTag.toString(), Toast.LENGTH_LONG).show();
-        }
-
     }
 }

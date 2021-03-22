@@ -1,6 +1,5 @@
 package com.example.gribyandrasteniyamap.view;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -27,31 +26,25 @@ import com.example.gribyandrasteniyamap.enums.IntentRequestCode;
 import com.example.gribyandrasteniyamap.enums.KingdomType;
 import com.example.gribyandrasteniyamap.service.CameraService;
 import com.example.gribyandrasteniyamap.service.LocationService;
-import com.example.gribyandrasteniyamap.service.PlantService;
+import com.example.gribyandrasteniyamap.service.rx.RxPlantService;
 import com.example.gribyandrasteniyamap.utils.Util;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.io.File;
-import java.util.function.Consumer;
-
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
 
 public class PhotoDescriptionActivity extends AppCompatActivity {
-
-    @Inject
-    PlantService plantService;
 
     @Inject
     CameraService cameraService;
 
     @Inject
     LocationService locationService;
+
+    @Inject
+    RxPlantService rxPlantService;
 
     private final String TAG = "PhotoDescriptionAct";
 
@@ -117,13 +110,8 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         locationService.checkSettingsAndStartLocationUpdates(this);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @SuppressLint("CheckResult")
     private void getPlant(long id) {
-        Observable.fromCallable(() -> plantService.getById(id))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleSuccessResult, this::handleError);
+        rxPlantService.getById(id, this::handleSuccessResult, this::handleError);
     }
 
     private void handleSuccessResult(Plant plant) {
@@ -195,7 +183,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
             plant.setSynchronized(false);
 
-            updatePlant(plant, (r) -> {
+            rxPlantService.update(plant, () -> {
                 setResult(IntentRequestCode.REQUEST_SAVE_PLANT.getCode());
                 finish();
             });
@@ -211,16 +199,8 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("CheckResult")
     private void deletePlant() {
-        File file = new File(plant.getFilePath());
-        if (file.exists()) {
-            boolean delete = file.delete();
-            Observable.fromCallable(() -> plantService.delete(plant))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(r -> finish());
-        }
+        rxPlantService.delete(plant, this::finish);
     }
 
     private void changeElementsVisibility(boolean enableProgressBar) {
@@ -249,14 +229,5 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
             }
         }
     }
-
-    @SuppressLint("CheckResult")
-    private void updatePlant(Plant plant, Consumer<Integer> successCallback) {
-        Observable.fromCallable(() -> plantService.update(plant))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(successCallback::accept);
-    }
-
 
 }

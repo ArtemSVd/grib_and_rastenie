@@ -33,7 +33,7 @@ public interface PlantDao {
     List<Integer> getExcludedPlantIds();
 
     @Query("SELECT count(1) from Plant where isSynchronized = 0")
-    Integer getNotSyncCount();
+    int getNotSyncCount();
 
     @Insert
     long insert(Plant plant);
