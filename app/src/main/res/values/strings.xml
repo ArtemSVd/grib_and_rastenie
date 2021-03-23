@@ -37,4 +37,5 @@
     <string name="sync_error">Synchronization error</string>
     <string name="sync_serv_unavailable">Server unavailable</string>
     <string name="sync_elements">Synced: %d elements</string>
+    <string name="write_comment">Enter a comment...</string>
 </resources>

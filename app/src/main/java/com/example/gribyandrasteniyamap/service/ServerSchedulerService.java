@@ -7,13 +7,14 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.gribyandrasteniyamap.R;
+import com.example.gribyandrasteniyamap.databse.entity.Plant;
 import com.example.gribyandrasteniyamap.dto.PlantDto;
 import com.example.gribyandrasteniyamap.service.http.PlantsAppClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -91,13 +92,14 @@ public class ServerSchedulerService {
                 .collect(Collectors.toList());
 
         try {
-            List<Integer> loadedPlantsId = httpClient.load(plants, files);
-            Log.i("PlantService", "Идентификаторы загруженных сущностей: " + loadedPlantsId);
-            loadedPlantsId.stream()
-                    .map(plantService::getById)
-                    .forEach(plant -> {
+            Map<Integer, Long> plantsIdToServerIds = httpClient.load(plants, files);
+            Log.i("PlantService", "Идентификаторы загруженных сущностей: " + plantsIdToServerIds);
+
+            plantsIdToServerIds.entrySet()
+                    .forEach(row -> {
+                        Plant plant = plantService.getById(row.getKey());
                         plant.setSynchronized(true);
-                        plant.setSyncDate(new Date());
+                        plant.setServerId(row.getValue());
                         plantService.update(plant);
                     });
 

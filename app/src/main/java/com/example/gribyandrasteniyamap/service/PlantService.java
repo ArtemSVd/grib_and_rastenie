@@ -90,6 +90,7 @@ public class PlantService {
                 .type(plant.getType())
                 .id(plant.getId())
                 .isLocal(true)
+                .serverId(plant.getServerId())
                 .build();
     }
 
@@ -98,4 +99,14 @@ public class PlantService {
         params.setExcludedPlantIds(excludedPlantIds);
         return httpClient.getPlantsFromServer(params);
     }
+
+    public PlantDto getPlantFromServer(Long plantId) throws IOException {
+        return httpClient.getPlantFromServer(plantId);
+    }
+
+    public PlantDto getPlantFromDb(Long plantId) {
+        Plant plant = appDatabase.plantDao().getById(plantId);
+        return mapToDto(plant);
+    }
+
 }

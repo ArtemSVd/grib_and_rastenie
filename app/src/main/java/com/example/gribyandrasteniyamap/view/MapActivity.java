@@ -178,7 +178,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap = googleMap;
 
         updateLocationUI();
-        CustomInfoWindowAdapter customInfoWindowAdapter = new CustomInfoWindowAdapter(this);
+        CustomInfoWindowAdapter customInfoWindowAdapter = new CustomInfoWindowAdapter(
+                this,
+                (intent) -> startActivityForResult(intent, IntentRequestCode.REQUEST_MAP_VIEW.getCode())
+        );
         mMap.setInfoWindowAdapter(customInfoWindowAdapter);
 
         getDeviceLocation();

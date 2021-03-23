@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -102,6 +103,22 @@ public class MainActivity extends AppCompatActivity {
         Switch schedulerSwitch = findViewById(R.id.settings_switch);
         schedulerSwitch.setOnClickListener(this::onSwitchChanged);
         schedulerSwitch.setChecked(sharedPreferencesService.getBooleanValueByKey(ENABLE_SCHEDULER));
+
+        showDarknessBackground(true);
+    }
+
+    private void showDarknessBackground(boolean isShow) {
+        LinearLayout dark = findViewById(R.id.darkBackground);
+        dark.setVisibility(isShow ? View.VISIBLE : View.GONE);
+
+        Button galleryButton = findViewById(R.id.galleryButton);
+        galleryButton.setEnabled(!isShow);
+
+        Button cameraButton = findViewById(R.id.cameraButton);
+        cameraButton.setEnabled(!isShow);
+
+        Button mapButton = findViewById(R.id.mapButton);
+        mapButton.setEnabled(!isShow);
     }
 
     private void onSwitchChanged(View view) {
@@ -119,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onCloseSettingsClick(View view) {
         findViewById(R.id.settings_view).setVisibility(View.GONE);
+        showDarknessBackground(false);
     }
 
     public void onSaveNameSetting(View view) {

@@ -1,6 +1,7 @@
 package com.example.gribyandrasteniyamap.service.rx;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import androidx.core.util.Consumer;
 
@@ -61,6 +62,21 @@ public class RxPlantService {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(callback::accept);
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    public void getPlant(Long plantId, boolean isLocal, Consumer<PlantDto> callback) {
+        if (isLocal) {
+            Observable.fromCallable(() -> plantService.getPlantFromDb(plantId))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(callback::accept);
+        } else {
+            Observable.fromCallable(() -> plantService.getPlantFromServer(plantId))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(callback::accept, e -> Log.e("", e.getMessage()));
         }
     }
 

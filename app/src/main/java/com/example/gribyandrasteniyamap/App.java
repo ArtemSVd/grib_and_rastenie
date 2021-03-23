@@ -18,6 +18,7 @@ import toothpick.Scope;
 import toothpick.Toothpick;
 
 import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.USERNAME;
+import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.UUID;
 
 public final class App extends Application {
 
@@ -34,11 +35,11 @@ public final class App extends Application {
         Toothpick.inject(this, Toothpick.openScope("APP"));
 
         String name = sharedPreferencesService.getStringValueByKey(USERNAME);
-        @SuppressLint("HardwareIds") String deviceName = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String uuid = sharedPreferencesService.getStringValueByKey(UUID);
 
         User user = User.builder()
                 .name(name)
-                .deviceName(deviceName)
+                .deviceName(uuid)
                 .build();
 
         appScope.installModules(

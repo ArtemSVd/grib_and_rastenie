@@ -39,9 +39,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".view.MapViewActivity"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".view.MapActivity"
-            android:label="@string/title_activity_map"></activity>
+            android:label="@string/title_activity_map" />
         <activity
             android:name=".view.PhotoDescriptionActivity"
             android:configChanges="orientation"

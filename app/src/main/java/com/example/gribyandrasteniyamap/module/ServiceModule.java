@@ -5,6 +5,7 @@ import com.example.gribyandrasteniyamap.service.ServerScheduler;
 import com.example.gribyandrasteniyamap.service.PlantService;
 import com.example.gribyandrasteniyamap.service.ServerSchedulerService;
 import com.example.gribyandrasteniyamap.service.http.HttpClient;
+import com.example.gribyandrasteniyamap.service.rx.RxCommentService;
 import com.example.gribyandrasteniyamap.service.rx.RxPlantService;
 import com.example.gribyandrasteniyamap.service.rx.RxSchedulePlantService;
 
@@ -20,6 +21,7 @@ public class ServiceModule extends Module {
         bind(ServerSchedulerService.class);
         bind(RxSchedulePlantService.class);
         bind(RxPlantService.class);
+        bind(RxCommentService.class);
     }
 
 }

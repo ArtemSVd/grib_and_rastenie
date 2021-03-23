@@ -2,16 +2,22 @@ package com.example.gribyandrasteniyamap.service.http;
 
 import androidx.annotation.Nullable;
 
+import com.example.gribyandrasteniyamap.dto.CommentDto;
 import com.example.gribyandrasteniyamap.dto.PlantDto;
 import com.example.gribyandrasteniyamap.dto.PlantsRequestParams;
 import com.example.gribyandrasteniyamap.utils.SerializeUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -21,20 +27,26 @@ public class PlantsAppClient {
     @Inject
     HttpClient httpClient;
 
+    private final ObjectMapper mapper;
+
     @Inject
     PlantsAppClient() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
-    private final ObjectMapper mapper = new ObjectMapper();
     private final String PLANT_URL = "http://172.22.206.1:8080";
 
-    public List<Integer> load(List<PlantDto> plants, List<File> files) throws IOException {
+    public Map<Integer, Long> load(List<PlantDto> plants, List<File> files) throws IOException {
         Response response = httpClient.postHttpMultipartResponse(PLANT_URL + "/api/plants/upload", SerializeUtil.getBytes(plants), files);
         InputStream inputStream = getBodyResponse(response);
         if (inputStream != null) {
-            return mapper.readValue(inputStream, mapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
+            TypeReference<HashMap<Integer, Long>> typeRef
+                    = new TypeReference<HashMap<Integer, Long>>() {};
+            return mapper.readValue(inputStream, typeRef);
         }
-        return Collections.emptyList();
+        return Collections.emptyMap();
     }
 
     public Boolean checkAvailable() throws IOException {
@@ -53,6 +65,29 @@ public class PlantsAppClient {
             return mapper.readValue(inputStream, mapper.getTypeFactory().constructCollectionType(List.class, PlantDto.class));
         }
         return Collections.emptyList();
+    }
+
+    public PlantDto getPlantFromServer(Long plantId) throws IOException {
+        Response response = httpClient.getHttpResponse(PLANT_URL+ "/api/plants/item/" + plantId);
+        InputStream inputStream = getBodyResponse(response);
+        if (inputStream != null) {
+            return mapper.readValue(inputStream, PlantDto.class);
+        }
+        return null;
+    }
+
+    public List<CommentDto> getCommentsFromServer(Long plantId) throws IOException {
+        Response response = httpClient.getHttpResponse(PLANT_URL + "/api/comment/plant/" + plantId);
+        InputStream inputStream = getBodyResponse(response);
+        if (inputStream != null) {
+            return mapper.readValue(inputStream, mapper.getTypeFactory().constructCollectionType(List.class, CommentDto.class));
+        }
+        return Collections.emptyList();
+    }
+
+    public CommentDto addComment(CommentDto comment) {
+        httpClient.postHttpResponse(PLANT_URL + "/api/comment", SerializeUtil.getBytes(comment));
+        return comment;
     }
 
     @Nullable

@@ -27,6 +27,7 @@ public class SharedPreferencesService {
     private final String APP_PREFERENCES = "SETTINGS";
 
     public static final String USERNAME = "user";
+    public static final String UUID = "uuid";
     public static final String ENABLE_SCHEDULER = "enableScheduler";
 
     @Nullable

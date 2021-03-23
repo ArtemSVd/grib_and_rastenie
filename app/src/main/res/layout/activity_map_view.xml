@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.PhotoDescriptionActivity"
-    android:background="@drawable/vert_description">
+    android:background="@drawable/vert_description"
+    tools:context=".view.MapViewActivity"
+    android:scrollbars="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="30dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
         android:layout_marginBottom="15dp"
         android:orientation="horizontal">
 
@@ -29,19 +31,16 @@
             android:id="@+id/LinerLayout2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="100">
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/photo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="45"
+                android:layout_height="250dp"
                 android:gravity="center"
-                android:visibility="visible"
                 android:scaleType="centerCrop"
+                android:visibility="visible"
                 tools:srcCompat="@tools:sample/avatars" />
-
 
             <EditText
                 android:id="@+id/name"
@@ -49,8 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
-                android:padding="5dp"
                 android:hint="@string/enterName"
+                android:padding="5dp"
                 android:visibility="visible" />
 
             <Spinner
@@ -59,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
-                android:padding="15dp"
+                android:padding="10dp"
                 android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -67,17 +66,61 @@
             <EditText
                 android:id="@+id/description"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
-                android:layout_weight="62"
                 android:background="#FFFFFF"
-                android:padding="5dp"
-                android:hint="@string/enterDescription"
                 android:gravity="start"
+                android:hint="@string/enterDescription"
+                android:padding="5dp"
                 android:visibility="visible" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <EditText
+                    android:id="@+id/comment_text_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/write_comment" />
+
+                <ImageButton
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="addComment"
+                    android:src="@drawable/send" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
+<!--        <Button-->
+<!--            android:id="@+id/button6"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:onClick="scroll"-->
+<!--            android:text="Button" />-->
 
         <TextView
             android:id="@+id/longitudeText"
@@ -105,8 +148,8 @@
             android:id="@+id/latitudeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/latitude"
             android:layout_marginTop="30sp"
+            android:layout_toStartOf="@id/latitude"
             android:background="#66FFFFFF"
             android:padding="5dp"
             android:text="@string/latitude"
@@ -124,30 +167,6 @@
             android:text="@string/zero"
             android:textColor="@color/black"
             android:textSize="15sp" />
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd ="false"
-            android:layout_alignParentBottom = "true"
-            android:alpha="0.80"
-            app:backgroundTint="#199589"
-            android:onClick="onCancel"
-            android:text="@string/cancel" />
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd ="true"
-            android:layout_alignParentBottom="true"
-            android:alpha="0.80"
-            app:backgroundTint="#199589"
-            android:onClick="onSave"
-            android:text="@string/save" />
     </RelativeLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-
-
+</androidx.core.widget.NestedScrollView>

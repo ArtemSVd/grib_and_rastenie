@@ -25,9 +25,11 @@ import com.example.gribyandrasteniyamap.view.model.User;
 
 import javax.inject.Inject;
 
+import toothpick.Scope;
 import toothpick.Toothpick;
 
 import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.USERNAME;
+import static com.example.gribyandrasteniyamap.service.SharedPreferencesService.UUID;
 
 public class NameDialogFragment extends AppCompatDialogFragment {
 
@@ -54,15 +56,21 @@ public class NameDialogFragment extends AppCompatDialogFragment {
         String name = editText.getText().toString();
 
         sharedPreferencesService.setValue(USERNAME, name);
+        java.util.UUID uuid = java.util.UUID.randomUUID();
+        sharedPreferencesService.setValue(UUID, java.util.UUID.randomUUID().toString());
 
-        @SuppressLint("HardwareIds") User user = User.builder()
+        User user = User.builder()
                 .name(name)
-                .deviceName(Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID))
+                .deviceName(uuid.toString())
                 .build();
 
         Toothpick.reset();
-        Toothpick.openScope("APP").installModules(
-                new SharedPreferencesModule(getActivity()),
+
+        Scope appScope = Toothpick.openScope("APP");
+
+        appScope.installModules(new SharedPreferencesModule(getContext()));
+
+        appScope.installModules(
                 new DatabaseModule(),
                 new ServiceModule(),
                 new AdapterModule(),

@@ -37,6 +37,6 @@ public class Plant {
 
     public boolean isSynchronized;
 
-    public Date syncDate;
+    public Long serverId;
 
 }
