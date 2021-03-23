@@ -20,9 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import okhttp3.Response;
 
+@Singleton
 public class PlantsAppClient {
     @Inject
     HttpClient httpClient;
@@ -32,8 +34,6 @@ public class PlantsAppClient {
     @Inject
     PlantsAppClient() {
         mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     private final String PLANT_URL = "http://172.22.206.1:8080";

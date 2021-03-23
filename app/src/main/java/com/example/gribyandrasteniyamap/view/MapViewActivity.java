@@ -31,8 +31,8 @@ import com.example.gribyandrasteniyamap.view.model.User;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -91,7 +91,7 @@ public class MapViewActivity extends AppCompatActivity {
 
         CommentDto commentDto = CommentDto.builder()
                 .text(editText.getText().toString())
-                .createdDate(LocalDateTime.now())
+                .createdDate(new Date())
                 .plantId(id)
                 .user(user).build();
 

@@ -15,8 +15,9 @@ import com.example.gribyandrasteniyamap.R;
 import com.example.gribyandrasteniyamap.dto.CommentDto;
 
 
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -62,7 +63,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MViewH
         CommentDto comment = comments.get(position);
         holder.username.setText(comment.getUser() != null ? comment.getUser().getName() : "Аnonymous");
         holder.text.setText(comment.getText());
-        holder.createdDate.setText(comment.getCreatedDate() != null ? comment.getCreatedDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) : "");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.ENGLISH);
+        holder.createdDate.setText(comment.getCreatedDate() != null ? formatter.format(comment.getCreatedDate()) : "");
     }
 
     @Override
