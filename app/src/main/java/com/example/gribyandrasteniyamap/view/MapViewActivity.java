@@ -124,6 +124,7 @@ public class MapViewActivity extends AppCompatActivity {
 
         EditText editText = findViewById(R.id.comment_text_text);
         editText.getText().clear();
+        scrollDown(null);
     }
 
     @SuppressLint("CheckResult")

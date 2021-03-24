@@ -84,9 +84,13 @@ public class PlantsAppClient {
         return Collections.emptyList();
     }
 
-    public CommentDto addComment(CommentDto comment) {
-        httpClient.postHttpResponse(PLANT_URL + "/api/comment", SerializeUtil.getBytes(comment));
-        return comment;
+    public CommentDto addComment(CommentDto comment) throws IOException {
+        Response response = httpClient.postHttpResponse(PLANT_URL + "/api/comment", SerializeUtil.getBytes(comment));
+        InputStream inputStream = getBodyResponse(response);
+        if (inputStream != null) {
+            return mapper.readValue(inputStream, CommentDto.class);
+        }
+        return null;
     }
 
     @Nullable
