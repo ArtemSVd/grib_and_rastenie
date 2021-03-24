@@ -43,7 +43,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MViewH
 
     public void addComment(CommentDto commentDto) {
         comments.add(commentDto);
-        //notifyDataSetChanged();
         notifyItemInserted(comments.size()-1);
     }
 
