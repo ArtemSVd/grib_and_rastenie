@@ -19,6 +19,7 @@ import com.example.gribyandrasteniyamap.dto.CommentDto;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -67,6 +68,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MViewH
         holder.username.setText(comment.getUser() != null ? comment.getUser().getName() : "Аnonymous");
         holder.text.setText(comment.getText());
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.ENGLISH);
+        SimpleDateFormat tzFormatter = new SimpleDateFormat("z", Locale.ENGLISH);
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         holder.createdDate.setText(comment.getCreatedDate() != null ? formatter.format(comment.getCreatedDate()) : "");
     }
 
