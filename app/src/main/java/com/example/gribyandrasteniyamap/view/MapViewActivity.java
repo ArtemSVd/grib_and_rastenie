@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -76,14 +79,26 @@ public class MapViewActivity extends AppCompatActivity {
         getPlant(id, isLocal);
     }
 
-    public void scroll(View view) {
-        NestedScrollView nestedScrollView = findViewById(R.id.scrollView);
-        nestedScrollView.fullScroll(View.FOCUS_DOWN);
+    public void hideKeyboard(View view){
+        InputMethodManager manager
+                = (InputMethodManager)
+                getSystemService(
+                        this.INPUT_METHOD_SERVICE);
+        manager
+                .hideSoftInputFromWindow(
+                        view.getWindowToken(), 0);
+    }
+
+    public void scrollDown(View view) {
+        ScrollView scrollView = findViewById(R.id.scroll);
+        scrollView.fullScroll(View.FOCUS_DOWN);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addComment(View view) {
         EditText editText = findViewById(R.id.comment_text_text);
+
+        hideKeyboard(view);
 
         if (editText.getText().length() == 0) {
             return;
@@ -173,9 +188,8 @@ public class MapViewActivity extends AppCompatActivity {
             RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1) ;
 
             RecyclerView recyclerView = findViewById(R.id.rv_images);
-            recyclerView.setHasFixedSize(true);
+            //recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
-
             commentsAdapter.setmContext(this);
             commentsAdapter.setComments(comments);
             recyclerView.setAdapter(commentsAdapter);

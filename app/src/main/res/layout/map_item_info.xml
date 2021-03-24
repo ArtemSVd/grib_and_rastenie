@@ -2,15 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/common_google_signin_btn_icon_dark_normal_background"
     android:orientation="horizontal"
     android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#99A2D6"
+        android:background="#99FFFFFF"
         android:orientation="vertical">
 
         <TextView
@@ -24,8 +22,14 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1sp"
+            android:background="#9A9595" />
+
         <TextView
             android:id="@+id/snippet"
+            android:padding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -33,19 +37,6 @@
             android:textColor="#000"
             android:textSize="14sp" />
 
-        <ImageButton
-            android:id="@+id/infoWindowButton"
-            style="@style/Widget.AppCompat.ImageButton"
-            android:layout_width="100dp"
-            android:layout_height="35dp"
-            android:layout_gravity="center_horizontal"
-            android:alpha="0.9"
-            android:backgroundTint="#858585"
-            android:clickable="true"
-            android:elevation="30dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/btn_star_big_on"
-            android:focusable="true" />
     </LinearLayout>
 
 

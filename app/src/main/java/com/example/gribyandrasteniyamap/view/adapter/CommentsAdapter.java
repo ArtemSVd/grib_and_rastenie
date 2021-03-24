@@ -5,6 +5,7 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,9 +40,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MViewH
         notifyDataSetChanged();
     }
 
+
     public void addComment(CommentDto commentDto) {
         comments.add(commentDto);
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
+        notifyItemInserted(comments.size()-1);
     }
 
     public List<CommentDto> getComments() {
@@ -56,6 +59,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MViewH
         View commentView = inflater.inflate(R.layout.comment_layout, parent, false);
         return new CommentsAdapter.MViewHolder(commentView);
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override

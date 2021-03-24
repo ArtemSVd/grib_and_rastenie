@@ -184,7 +184,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         );
         mMap.setInfoWindowAdapter(customInfoWindowAdapter);
 
-        getDeviceLocation();
+        //getDeviceLocation();
         mMap.setOnInfoWindowClickListener(customInfoWindowAdapter);
 
         find();
