@@ -52,6 +52,8 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
     boolean editMode;
 
+    boolean plantSaved;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,15 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
         getPlant(id);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!editMode) {
+            deletePlant();
+        }
+    }
+
 
     private void configure() {
         configureSpinner();
@@ -185,6 +196,7 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
 
             rxPlantService.update(plant, () -> {
                 setResult(IntentRequestCode.REQUEST_SAVE_PLANT.getCode());
+                plantSaved = true;
                 finish();
             });
         }
@@ -200,7 +212,9 @@ public class PhotoDescriptionActivity extends AppCompatActivity {
     }
 
     private void deletePlant() {
-        rxPlantService.delete(plant, this::finish);
+        if (!plantSaved) {
+            rxPlantService.delete(plant, this::finish);
+        }
     }
 
     private void changeElementsVisibility(boolean enableProgressBar) {
